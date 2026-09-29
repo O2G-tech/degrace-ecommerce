@@ -1,0 +1,774 @@
+/* ==========================================================================
+   MAGAZINE HERO SECTION — HGHMNDS INSPIRED STYLE
+   Crazy editorial layout with giant oversized type and model cutout
+   ========================================================================== */
+
+/* ──────────────────────────────────────────────
+   RESET SECTION BASE
+────────────────────────────────────────────── */
+.mag-hero {
+  position: relative;
+  min-height: 100vh;
+  background: #f5f3ef;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', 'Arial Black', sans-serif;
+}
+
+/* ──────────────────────────────────────────────
+   TOP META BAR (like "WEBSITE DESIGN FOR:")
+────────────────────────────────────────────── */
+.mag-hero__meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+  z-index: 20;
+  position: relative;
+}
+
+.mag-hero__meta-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mag-hero__dot-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.mag-hero__dot-row span {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1a1a1a;
+}
+
+.mag-hero__meta-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: #555;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.mag-hero__meta-right {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.mag-hero__year {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 0.04em;
+}
+
+.mag-hero__tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: #888;
+  text-transform: uppercase;
+  background: #e8e5df;
+  padding: 4px 10px;
+  border-radius: 2px;
+}
+
+/* ──────────────────────────────────────────────
+   MAIN LAYOUT: Brand name + giant type + model
+────────────────────────────────────────────── */
+.mag-hero__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  padding: 10px 48px 0 48px;
+  min-height: calc(100vh - 130px);
+}
+
+/* ──────────────────────────────────────────────
+   GIANT EDITORIAL HEADLINE
+────────────────────────────────────────────── */
+.mag-hero__content-row {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 20px;
+  z-index: 5;
+  margin-top: auto;
+}
+
+.mag-hero__headline-block {
+  position: relative;
+  width: 100%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mag-hero__headline-top {
+  font-size: clamp(4rem, 9.5vw, 9.5rem);
+  font-weight: 900;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.85;
+  display: block;
+  font-style: italic;
+  max-width: 45%;
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.mag-hero__headline-bottom {
+  font-size: clamp(5rem, 12.5vw, 13rem);
+  font-weight: 900;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.82;
+  display: block;
+  text-align: right;
+  padding-right: 20px;
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+/* ──────────────────────────────────────────────
+   MODEL IMAGE (extra large towering cutout in center)
+────────────────────────────────────────────── */
+.mag-hero__model-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  height: 100%;
+  max-height: 920px;
+  width: 100%;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.mag-hero__model-img {
+  height: 100%;
+  max-height: 890px;
+  width: auto;
+  max-width: 95vw;
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
+  filter: drop-shadow(0 30px 70px rgba(0,0,0,0.25));
+  transition: transform 0.4s ease;
+}
+
+/* ──────────────────────────────────────────────
+   ROPE ANIMATION SHOWCASE LAYER
+   Hanging products (Bag, Shoes, Shirt, Watch) from different angles
+────────────────────────────────────────────── */
+.rope-showcase-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 12;
+  overflow: visible;
+}
+
+.rope-item {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  transform-origin: top center;
+  animation: ropeDrop 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.rope-item--bag {
+  top: 0;
+  left: 8%;
+  animation-delay: 0.2s;
+}
+
+.rope-item--shoes {
+  top: 0;
+  right: 8%;
+  animation-delay: 0.5s;
+}
+
+.rope-item--shirt {
+  top: 0;
+  left: 24%;
+  animation-delay: 0.8s;
+}
+
+.rope-item--watch {
+  top: 0;
+  right: 24%;
+  animation-delay: 1.1s;
+}
+
+/* Individual rope lengths & sway animations */
+.rope-item--bag .rope-string { height: 110px; }
+.rope-item--shoes .rope-string { height: 95px; }
+.rope-item--shirt .rope-string { height: 250px; }
+.rope-item--watch .rope-string { height: 230px; }
+
+.rope-item--bag .rope-product-card {
+  animation: gentleSway1 4.5s ease-in-out infinite alternate;
+}
+.rope-item--shoes .rope-product-card {
+  animation: gentleSway2 5s ease-in-out infinite alternate;
+}
+.rope-item--shirt .rope-product-card {
+  animation: gentleSway1 4.8s ease-in-out 0.5s infinite alternate;
+}
+.rope-item--watch .rope-product-card {
+  animation: gentleSway2 5.2s ease-in-out 0.8s infinite alternate;
+}
+
+/* Slender metallic luxury rope string */
+.rope-string {
+  width: 2px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #c5a059 50%, #1a1a1a 100%);
+  box-shadow: 0 0 6px rgba(197, 160, 89, 0.4);
+  position: relative;
+}
+
+.rope-knot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #c5a059;
+  background: #1a1a1a;
+  margin-top: -2px;
+  margin-bottom: -2px;
+  z-index: 2;
+}
+
+/* Product Card hanging on rope */
+.rope-product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  border-radius: 16px;
+  padding: 8px;
+  text-decoration: none;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.14);
+  transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  width: 110px;
+  transform-origin: top center;
+}
+
+.rope-product-card:hover {
+  transform: scale(1.18) translateY(6px);
+  border-color: #c5a059;
+  box-shadow: 0 20px 45px rgba(197, 160, 89, 0.3);
+  z-index: 20;
+}
+
+.rope-product-img-wrap {
+  width: 94px;
+  height: 94px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f6f0;
+}
+
+.rope-product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.rope-product-card:hover .rope-product-img-wrap img {
+  transform: scale(1.1);
+}
+
+.rope-product-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.rope-tag-cat {
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #c5a059;
+  text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
+}
+
+.rope-tag-name {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.1;
+  margin-top: 1px;
+}
+
+.rope-tag-price {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #555;
+  margin-top: 2px;
+}
+
+/* Keyframes for Rope Animations */
+@keyframes ropeDrop {
+  0% {
+    transform: translateY(-400px) rotate(12deg);
+    opacity: 0;
+  }
+  65% {
+    transform: translateY(18px) rotate(-6deg);
+    opacity: 1;
+  }
+  82% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes gentleSway1 {
+  0% { transform: rotate(-4deg) translateY(0); }
+  50% { transform: rotate(4deg) translateY(-6px); }
+  100% { transform: rotate(-4deg) translateY(0); }
+}
+
+@keyframes gentleSway2 {
+  0% { transform: rotate(5deg) translateY(0); }
+  50% { transform: rotate(-3deg) translateY(-8px); }
+  100% { transform: rotate(5deg) translateY(0); }
+}
+
+/* Responsive adjustments for mobile screens */
+@media (max-width: 1024px) {
+  .rope-item--shirt, .rope-item--watch {
+    display: none;
+  }
+  .rope-item--bag { left: 4%; }
+  .rope-item--shoes { right: 4%; }
+}
+
+@media (max-width: 640px) {
+  .rope-product-card {
+    width: 85px;
+    padding: 5px;
+  }
+  .rope-product-img-wrap {
+    width: 75px;
+    height: 75px;
+  }
+  .rope-tag-cat, .rope-tag-price {
+    display: none;
+  }
+}
+
+/* ──────────────────────────────────────────────
+   LEFT COLUMN STATS (410K followers etc)
+────────────────────────────────────────────── */
+.mag-hero__left-col {
+  position: absolute;
+  left: 48px;
+  bottom: 80px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mag-hero__stat-block {}
+
+.mag-hero__stat-num {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  display: block;
+}
+
+.mag-hero__stat-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: #888;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 2px;
+}
+
+.mag-hero__social-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.mag-hero__social-row a {
+  font-size: 0.85rem;
+  color: #555;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-weight: 600;
+}
+
+.mag-hero__social-row a:hover {
+  color: #c5a059;
+}
+
+/* ──────────────────────────────────────────────
+   RIGHT COLUMN INFO BLOCK (page num, avatars, btn, brand partners)
+────────────────────────────────────────────── */
+.mag-hero__right-col {
+  position: absolute;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-30%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  max-width: 280px;
+  text-align: right;
+}
+
+.mag-hero__page-num {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.mag-hero__page-num span {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: -0.04em;
+  margin-right: 4px;
+}
+
+/* Avatar stack */
+.mag-hero__avatars {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+}
+
+.mag-hero__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+  margin-left: -8px;
+  background: #ddd;
+  overflow: hidden;
+}
+
+.mag-hero__avatar:first-child {
+  margin-left: 0;
+}
+
+.mag-hero__avatar-count {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #c5a059;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -8px;
+  border: 2px solid white;
+  letter-spacing: 0;
+}
+
+/* Promo card */
+.mag-hero__promo-card {
+  background: #1a1a1a;
+  color: white;
+  padding: 16px 20px;
+  border-radius: 10px;
+  text-align: left;
+  width: 200px;
+}
+
+.mag-hero__promo-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.mag-hero__promo-title em {
+  color: #c5a059;
+  font-style: normal;
+}
+
+.mag-hero__promo-sub {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+/* Premium Quality badge */
+.mag-hero__quality-badge {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: #888;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mag-hero__quality-badge::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  background: #c5a059;
+}
+
+/* Brand partners count */
+.mag-hero__partners-count {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.mag-hero__partners-count span {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #888;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 2px;
+}
+
+/* ──────────────────────────────────────────────
+   SHOP NOW BUTTON (hovers near left of model)
+────────────────────────────────────────────── */
+.mag-hero__cta-wrap {
+  position: absolute;
+  left: 46%;
+  bottom: 120px;
+  transform: translateX(-180px);
+  z-index: 20;
+}
+
+.mag-hero__cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  color: white;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 40px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.mag-hero__cta-btn:hover {
+  background: #c5a059;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(197,160,89,0.35);
+  color: #1a1a1a;
+}
+
+.mag-hero__cta-arrow {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+}
+
+/* ──────────────────────────────────────────────
+   BOTTOM TICKER STRIPE
+────────────────────────────────────────────── */
+.mag-hero__ticker-stripe {
+  background: #1a1a1a;
+  color: #c5a059;
+  display: flex;
+  overflow: hidden;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  height: 36px;
+  align-items: center;
+  position: relative;
+  z-index: 25;
+  flex-shrink: 0;
+}
+
+.mag-hero__ticker-inner {
+  display: flex;
+  gap: 0;
+  animation: mag-ticker-scroll 24s linear infinite;
+  white-space: nowrap;
+  align-items: center;
+}
+
+.mag-hero__ticker-item {
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255,255,255,0.85);
+}
+
+.mag-hero__ticker-item em {
+  color: #c5a059;
+  font-style: normal;
+}
+
+.mag-hero__ticker-sep {
+  color: #c5a059;
+  font-size: 0.5rem;
+}
+
+@keyframes mag-ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ──────────────────────────────────────────────
+   RESPONSIVE
+────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .mag-hero__headline-top {
+    max-width: 55%;
+    font-size: clamp(2.5rem, 6vw, 5.5rem);
+  }
+  .mag-hero__headline-bottom {
+    font-size: clamp(3rem, 8vw, 7rem);
+  }
+  .mag-hero__right-col {
+    max-width: 220px;
+  }
+  .mag-hero__promo-card {
+    width: 170px;
+  }
+}
+
+@media (max-width: 860px) {
+  .mag-hero__body {
+    grid-template-columns: 1fr;
+    padding: 0 24px;
+  }
+
+  .mag-hero__nav-col {
+    display: none;
+  }
+
+  .mag-hero__headline-top {
+    max-width: 100%;
+    font-size: clamp(2.2rem, 10vw, 4.5rem);
+  }
+
+  .mag-hero__headline-bottom {
+    font-size: clamp(2.8rem, 12vw, 5.5rem);
+    text-align: left;
+    padding-right: 0;
+  }
+
+  .mag-hero__model-wrap {
+    height: 65%;
+    left: 55%;
+  }
+
+  .mag-hero__right-col {
+    right: 16px;
+    top: 40%;
+    gap: 12px;
+  }
+
+  .mag-hero__promo-card {
+    display: none;
+  }
+
+  .mag-hero__left-col {
+    left: 24px;
+    bottom: 60px;
+  }
+
+  .mag-hero__cta-wrap {
+    left: 24px;
+    bottom: 80px;
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .mag-hero__meta-bar {
+    padding: 14px 20px;
+  }
+  .mag-hero__body {
+    padding: 0 16px;
+  }
+  .mag-hero__headline-top {
+    font-size: clamp(1.8rem, 11vw, 3.5rem);
+  }
+  .mag-hero__headline-bottom {
+    font-size: clamp(2rem, 13vw, 4rem);
+  }
+  .mag-hero__model-wrap {
+    height: 58%;
+    left: 60%;
+  }
+  .mag-hero__stat-num {
+    font-size: 1.6rem;
+  }
+  .mag-hero__right-col {
+    display: none;
+  }
+  .mag-hero__cta-btn {
+    font-size: 0.7rem;
+    padding: 11px 20px;
+  }
+}

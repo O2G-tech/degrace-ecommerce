@@ -1,0 +1,102 @@
+<UserControl x:Class="DeGraceAdmin.Views.CategoriesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="BOUTIQUE ARCHITECTURE" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushGold}" />
+                <TextBlock Text="Categories &amp; Collections" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="{StaticResource BrushText}" Margin="0,4,0,0" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="+ CREATE COLLECTION" Style="{StaticResource GoldButtonStyle}" Command="{Binding OpenAddModalCommand}" Margin="0,0,10,0" />
+                <Button Content="REFRESH" Style="{StaticResource OutlineButtonStyle}" Command="{Binding RefreshCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Action Bar -->
+        <Grid Grid.Row="1" Margin="0,0,0,15">
+            <TextBlock Text="Manage boutique product hierarchies, couture collections, and navigation categories."
+                       FontSize="13"
+                       Foreground="{StaticResource BrushTextMuted}"
+                       VerticalAlignment="Center" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="EDIT COLLECTION"
+                        Style="{StaticResource OutlineButtonStyle}"
+                        Margin="0,0,10,0"
+                        Command="{Binding OpenEditModalCommand}" />
+                <Button Content="DELETE SELECTED"
+                        Style="{StaticResource OutlineButtonStyle}"
+                        Foreground="{StaticResource BrushDanger}"
+                        BorderBrush="{StaticResource BrushDanger}"
+                        Command="{Binding DeleteCategoryCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Categories DataGrid -->
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="0">
+            <DataGrid ItemsSource="{Binding Categories}"
+                      SelectedItem="{Binding SelectedCategory}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" />
+                    <DataGridTextColumn Header="Category / Collection Name" Binding="{Binding DisplayName}" Width="320" />
+                    <DataGridTextColumn Header="Slug" Binding="{Binding Slug}" Width="200" />
+                    <DataGridTextColumn Header="Items Count" Binding="{Binding ProductCount}" Width="140" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100" />
+                    <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedAt}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Add / Edit Category Modal Overlay -->
+        <Grid Grid.RowSpan="3"
+              Background="#D00A0A0C"
+              Visibility="{Binding IsAddModalOpen, Converter={StaticResource BoolToVis}}"
+              Margin="-30">
+            <Border Width="440"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource CardBorderStyle}"
+                    BorderBrush="{StaticResource BrushBorderGold}"
+                    Padding="28">
+                <StackPanel>
+                    <TextBlock Text="{Binding ModalTitle}"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               FontFamily="Georgia"
+                               Foreground="{StaticResource BrushGold}"
+                               Margin="0,0,0,18" />
+
+                    <TextBlock Text="COLLECTION NAME" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushTextMuted}" Margin="0,0,0,4" />
+                    <TextBox Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource DarkTextBoxStyle}" Margin="0,0,0,14" />
+
+                    <TextBlock Text="SHOWCASE IMAGE / PICTURE URL" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushTextMuted}" Margin="0,0,0,4" />
+                    <TextBox Text="{Binding NewCategoryImage, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource DarkTextBoxStyle}" Margin="0,0,0,20" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="CANCEL" Style="{StaticResource OutlineButtonStyle}" Command="{Binding CloseAddModalCommand}" />
+                        <Button Grid.Column="2" Content="SAVE COLLECTION" Style="{StaticResource GoldButtonStyle}" Command="{Binding SaveCategoryCommand}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

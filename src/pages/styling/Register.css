@@ -1,0 +1,224 @@
+/* ============================================================
+   DE-GRACE CLASSIC BOUTIQUE — Register.css
+   Split layout: Left luxury brand editorial panel
+   + Right haute couture client registration form.
+   ============================================================ */
+
+:root {
+  --boutique-gold: #c5a059;
+  --boutique-gold-light: #dfc285;
+  --boutique-gold-tint: rgba(197, 160, 89, 0.12);
+  --boutique-black: #0b0b0c;
+  --boutique-dark: #141416;
+  --boutique-cream: #faf8f5;
+  --boutique-white: #ffffff;
+  --boutique-border: rgba(197, 160, 89, 0.28);
+  --boutique-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.45);
+}
+
+.auth-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--boutique-cream);
+  font-family: "Outfit", sans-serif;
+  color: var(--boutique-dark);
+  overflow: hidden;
+  padding: 3rem 3rem 3rem calc(50% + 3.5rem);
+}
+
+/* ---------------- Left brand panel: editorial imagery + overlay ---------------- */
+.auth-page::before {
+  content: "DE-GRACE\A CLASSIC BOUTIQUE";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  align-items: flex-start;
+  padding: 4rem 0 0 4rem;
+  background:
+    linear-gradient(190deg, rgba(11, 11, 12, 0.4) 0%, rgba(11, 11, 12, 0.94) 85%),
+    url("https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1400&auto=format&fit=crop")
+      center / cover no-repeat;
+  clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 800;
+  font-size: 2.6rem;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  color: #dfc285;
+  text-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+  white-space: pre-line;
+}
+
+/* ---------------- Left brand panel: editorial benefits & tagline ---------------- */
+.auth-page::after {
+  content: "THE PRIVÉ CLIENT MEMBERSHIP\A\A✦ Private salon viewings & runway pre-orders\A✦ White-glove concierge delivery nationwide\A✦ Bespoke size alterations by master tailors\A✦ Certificate of authenticity on all fine pieces\A✦ Direct 24/7 client styling concierge";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  height: 58%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 4rem 4rem 4rem;
+  clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
+  white-space: pre-line;
+  color: rgba(250, 248, 245, 0.92);
+  font-size: 0.98rem;
+  line-height: 2.1;
+  letter-spacing: 0.02em;
+  font-family: "Outfit", sans-serif;
+}
+
+/* ---------------- Right side: registration form ---------------- */
+.auth-page > h1,
+.auth-page > p,
+.auth-page > form {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-page > h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.9rem;
+  color: var(--boutique-black);
+  position: relative;
+  letter-spacing: -0.02em;
+}
+
+.auth-page > h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 55px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--boutique-gold);
+}
+
+.auth-page > p {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1.15rem;
+  border-radius: 6px;
+  background: var(--boutique-gold-tint);
+  border-left: 3px solid var(--boutique-gold);
+  color: var(--boutique-black);
+  font-size: 0.94rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.auth-page > form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.auth-page > form input {
+  width: 100%;
+  padding: 0.95rem 1.15rem;
+  border: 1.5px solid #dcd7ce;
+  border-radius: 6px;
+  background: var(--boutique-white);
+  font-family: "Outfit", sans-serif;
+  font-size: 0.98rem;
+  color: var(--boutique-dark);
+  transition: all 0.25s ease;
+}
+
+.auth-page > form input::placeholder {
+  color: #9c958b;
+  font-weight: 400;
+}
+
+.auth-page > form input:focus {
+  outline: none;
+  border-color: var(--boutique-gold);
+  box-shadow: 0 0 0 4px var(--boutique-gold-tint);
+}
+
+.auth-page > form button {
+  margin-top: 0.6rem;
+  padding: 1.05rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #0b0b0c 0%, #1f1f23 100%);
+  color: #dfc285;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--boutique-gold);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.auth-page > form button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c5a059 0%, #a8843c 100%);
+  color: #0b0b0c;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(197, 160, 89, 0.35);
+}
+
+.auth-page > form button:disabled {
+  background: #555;
+  color: #aaa;
+  border-color: #555;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.auth-page > form span {
+  font-size: 0.92rem;
+  color: #71695f;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.auth-page > form a {
+  color: var(--boutique-gold);
+  font-weight: 700;
+  margin-left: 0.35rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------------- Responsive: stack panels below ~900px ---------------- */
+@media (max-width: 900px) {
+  .auth-page {
+    padding: 260px 1.5rem 3rem;
+    justify-content: flex-start;
+  }
+
+  .auth-page::before {
+    width: 100%;
+    height: 240px;
+    bottom: auto;
+    padding: 2rem 0 0 2rem;
+    font-size: 1.8rem;
+    clip-path: none;
+  }
+
+  .auth-page::after {
+    width: 100%;
+    height: 240px;
+    padding: 0 2rem 1.25rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    clip-path: none;
+  }
+}

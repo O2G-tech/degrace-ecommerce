@@ -1,0 +1,396 @@
+MILESTONE 1
+React interface 
+       ↓
+MILESTONE 2
+MySQL database
+       ↓
+MILESTONE 3
+PHP API
+       ↓
+MILESTONE 4
+React + Axios
+       ↓
+MILESTONE 5
+Authentication
+       ↓
+MILESTONE 6
+Dynamic products
+       ↓
+MILESTONE 7
+Cart
+       ↓
+MILESTONE 8
+Checkout
+       ↓
+MILESTONE 9
+Orders
+       ↓
+MILESTONE 10
+Admin
+       ↓
+MILESTONE 11
+Payment
+       ↓
+MILESTONE 12
+Security + deployment
+
+
+ADD THAT IF THERE ARE NO PRODUCTS IN CATEGORY THERE SHOULD BE AN ERROR DISPLAY
+
+ADD A DYNAMIC REGISTRATION PAGE WITH CSS SO THAT THE PAGE IS DIVIDED INTO 2 SECTIONS LEFT AND RIGHT . LEFT BEING AN IMAGE DESCRIPTION OF WHAT JUMIA SHOP DOES AND RIGHT BEING THE REGISTRATION PAGE
+
+
+STRUCTURE OF DATABASE TABLES
+
+users
+categories
+products
+product_images
+cart
+cart_items
+orders
+order_items
+payments
+addresses
+reviews
+
+
+
+
+backend/
+├── auth/
+│   ├── login.php
+│   ├── register.php
+│   └── user.php
+│
+├── categories/
+│   ├── get.php
+│   └── subcategories.php
+│
+├── products/
+│   ├── get.php
+│   ├── single.php
+│   ├── create.php
+│   ├── update.php
+│   └── delete.php
+│
+├── cart/
+│   ├── get.php
+│   ├── add.php
+│   ├── update.php
+│   └── delete.php
+│
+└── orders/
+    ├── create.php
+    ├── get.php
+    └── single.php
+
+
+
+    src/services/
+├── api.js
+├── authService.js
+├── categoryService.js
+├── productService.js
+├── cartService.js
+└── orderService.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MILESTONE 5 — Authentication
+
+Customers should be able to:
+
+Register
+   ↓
+Login
+   ↓
+Account
+   ↓
+Logout
+
+Registration:
+
+Name
+Email
+Phone
+Password
+Confirm Password
+
+Login:
+
+Email
+Password
+
+We'll also have:
+
+Forgot Password
+Reset Password
+User Profile
+
+Passwords must be stored using PHP's:
+
+password_hash()
+
+and checked using:
+
+password_verify()
+MILESTONE 6 — Dynamic Products
+
+This is where your store starts becoming a real e-commerce application.
+
+Products will come from MySQL rather than being hard-coded in React.
+
+Customer can:
+
+Browse products
+Search products
+Filter products
+Sort products
+View product
+Select category
+Select subcategory
+
+For example:
+
+Home
+ ↓
+Kitchen
+ ↓
+Blenders
+ ↓
+Products
+
+And:
+
+Phones
+ ↓
+Products
+
+This follows the category structure we just established.
+
+MILESTONE 7 — Shopping Cart
+
+Customer can:
+
+Add to Cart
+     ↓
+Cart
+     ↓
+Increase quantity
+Decrease quantity
+Remove product
+     ↓
+Calculate subtotal
+     ↓
+Calculate total
+
+Example:
+
+Silver Crest Blender     ₦35,000 × 2
+Electric Kettle          ₦18,500 × 1
+-------------------------------------
+Subtotal                 ₦88,500
+Delivery                 ₦5,000
+-------------------------------------
+Total                    ₦93,500
+
+The cart should be associated with the logged-in customer.
+
+MILESTONE 8 — Checkout
+
+Customer enters:
+
+Full Name
+Phone
+Email
+Delivery Address
+State
+City
+Postal Code
+
+Then chooses delivery/payment options.
+
+Example:
+
+Delivery Information
+─────────────────────
+
+Name:       Divine Austin
+Phone:      080XXXXXXXX
+Address:    Abuja
+State:      FCT
+
+[ Continue to Payment ]
+MILESTONE 9 — Orders
+
+After checkout:
+ 
+Cart
+ ↓
+Checkout
+ ↓
+Order created
+ ↓
+Payment
+ ↓
+Order confirmed
+
+Customer should have:
+
+My Orders
+
+with:
+
+Order #10001
+Status: Processing
+
+Order #10002
+Status: Shipped
+
+Order #10003
+Status: Delivered
+
+Order statuses:
+
+Pending
+Processing
+Shipped
+Delivered
+Cancelled
+MILESTONE 10 — Admin Dashboard
+
+This is where the website becomes manageable.
+
+Admin dashboard:
+
+ADMIN DASHBOARD
+────────────────────────
+
+Dashboard
+
+Products
+Categories
+Orders
+Customers
+Payments
+Reviews
+Reports
+Settings
+
+Admin should be able to:
+
+Products
+Add Product
+Edit Product
+Delete Product
+Upload Images
+Update Stock
+Categories
+Add Category
+Edit Category
+Delete Category
+Upload Category Image
+Set Parent Category
+
+For example:
+
+Name: Blenders
+
+Parent Category:
+[ Kitchen ▼ ]
+
+Image:
+[ Choose File ]
+
+[ Save ]
+
+This automatically creates:
+
+Home
+ ↓
+Kitchen
+ ↓
+Blenders
+
+without editing MySQL manually.
+
+MILESTONE 11 — Payment
+
+For a Nigerian e-commerce website, we can integrate a payment provider such as:
+
+Paystack
+Flutterwave
+
+The flow becomes:
+
+Customer
+   ↓
+Checkout
+   ↓
+Create Order
+   ↓
+Payment Gateway
+   ↓
+Payment
+   ↓
+Payment Verification
+   ↓
+Order Confirmed
+
+We should not simply mark an order as paid because the frontend says payment succeeded. The PHP backend should verify the transaction with the payment provider.
+
+MILESTONE 12 — Security + Deployment
+
+Finally, we secure the entire application.
+
+We'll handle:
+
+SQL Injection
+XSS
+CORS
+Authentication
+Authorization
+Password Security
+File Upload Security
+Input Validation
+API Security
+Admin Protection
+Payment Verification
+
+Then deploy:
+
+React
+   ↓
+Production hosting
+
+PHP
+   ↓
+Web server
+
+MySQL
+   ↓
+Production database
+
+We'll also change:
+
+http://localhost
+
+to your actual production domain/API URL.

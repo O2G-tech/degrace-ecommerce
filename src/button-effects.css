@@ -1,0 +1,158 @@
+/* ==========================================================================
+   ENHANCED BUTTON EFFECTS & INTERACTIONS
+   ========================================================================== */
+
+/* Enhanced Primary Button */
+.cinema-btn-primary {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cinema-btn-primary:hover {
+  transform: translateY(-8px) rotateX(15deg) scale(1.05);
+  box-shadow: 
+    0 25px 80px rgba(197, 160, 89, 0.8),
+    0 0 0 8px rgba(197, 160, 89, 0.15),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+.cinema-btn-primary:active {
+  transform: translateY(-4px) rotateX(5deg) scale(1.02);
+}
+
+/* Enhanced Shimmer */
+.btn-shimmer {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.8) 15deg,
+    transparent 30deg,
+    transparent 330deg,
+    rgba(255, 255, 255, 0.8) 345deg,
+    transparent 360deg
+  );
+  animation: shimmer-rotate 4s linear infinite;
+  border-radius: inherit;
+}
+
+@keyframes shimmer-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Button Ripple Effect */
+.cinema-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.cinema-btn-primary:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Enhanced Ghost Button */
+.cinema-btn-ghost {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(197, 160, 89, 0.3);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cinema-btn-ghost::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(197, 160, 89, 0.2) 50%, 
+    transparent 100%
+  );
+  transition: left 0.6s ease;
+}
+
+.cinema-btn-ghost:hover::before {
+  left: 100%;
+}
+
+.cinema-btn-ghost:hover {
+  background: rgba(197, 160, 89, 0.15);
+  border-color: rgba(197, 160, 89, 0.8);
+  color: var(--gold-light);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 
+    0 15px 40px rgba(197, 160, 89, 0.4),
+    0 0 0 4px rgba(197, 160, 89, 0.1),
+    inset 0 1px 0 rgba(197, 160, 89, 0.3);
+}
+
+/* Floating Button Glow */
+.cinema-btn-primary,
+.cinema-btn-ghost {
+  animation: button-float 6s ease-in-out infinite;
+}
+
+@keyframes button-float {
+  0%, 100% { 
+    transform: translateY(0) scale(1); 
+  }
+  50% { 
+    transform: translateY(-2px) scale(1.005); 
+  }
+}
+
+/* Arrow Enhancement */
+.btn-arrow {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  display: inline-block;
+}
+
+.cinema-btn-primary:hover .btn-arrow {
+  transform: translateX(10px) rotate(15deg) scale(1.3);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+}
+
+/* Button Loading State */
+.btn-loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.btn-loading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: button-spin 1s linear infinite;
+}
+
+@keyframes button-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

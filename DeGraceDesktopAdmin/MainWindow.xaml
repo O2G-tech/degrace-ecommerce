@@ -1,0 +1,240 @@
+<Window x:Class="DeGraceAdmin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:DeGraceAdmin.ViewModels"
+        xmlns:views="clr-namespace:DeGraceAdmin.Views"
+        xmlns:conv="clr-namespace:DeGraceAdmin.Converters"
+        mc:Ignorable="d"
+        Title="DE-GRACE CLASSIC BOUTIQUE — Executive Management Terminal" 
+        Icon="pack://application:,,,/icon.ico"
+        Height="820" Width="1300"
+        MinHeight="700" MinWidth="1050"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BrushBackground}">
+
+    <Window.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <!-- DataTemplate mappings from ViewModels to Views -->
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+            <views:ProductsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:OrdersViewModel}">
+            <views:OrdersView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CategoriesViewModel}">
+            <views:CategoriesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CustomersViewModel}">
+            <views:CustomersView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ReviewsViewModel}">
+            <views:ReviewsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+            <views:LoginView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Sidebar Navigation -->
+        <Border Grid.Column="0"
+                Background="{StaticResource BrushSurface}"
+                BorderBrush="{StaticResource BrushBorder}"
+                BorderThickness="0,0,1,0">
+            <Grid Margin="20,24">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Brand Emblem -->
+                <StackPanel Grid.Row="0" Margin="4,0,0,30">
+                    <TextBlock Text="DE-GRACE"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               FontFamily="Georgia"
+                               Foreground="{StaticResource BrushGold}" />
+                    <TextBlock Text="CLASSIC BOUTIQUE"
+                               FontSize="9"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource BrushTextMuted}"
+                               Margin="0,2,0,0" />
+                    <TextBlock Text="EXECUTIVE TERMINAL"
+                               FontSize="8"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource BrushGoldLight}"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+
+                <!-- Navigation List -->
+                <StackPanel Grid.Row="1">
+                    <RadioButton Content="📊  Dashboard"
+                                 Style="{StaticResource NavButtonStyle}"
+                                 IsChecked="True"
+                                 Command="{Binding NavigateCommand}"
+                                 CommandParameter="Dashboard" />
+
+                    <RadioButton Content="📦  Products &amp; Stock"
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Command="{Binding NavigateCommand}"
+                                 CommandParameter="Products" />
+
+                    <RadioButton Content="🛒  Orders &amp; Dispatch"
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Command="{Binding NavigateCommand}"
+                                 CommandParameter="Orders" />
+
+                    <RadioButton Content="🗂️  Collections &amp; Categories"
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Command="{Binding NavigateCommand}"
+                                 CommandParameter="Categories" />
+
+                    <RadioButton Content="👥  Clients &amp; Accounts"
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Command="{Binding NavigateCommand}"
+                                 CommandParameter="Customers" />
+
+                    <RadioButton Content="📝  Reviews Moderation"
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Command="{Binding NavigateCommand}"
+                                 CommandParameter="Reviews" />
+                </StackPanel>
+
+                <!-- Curator Profile & Sign Out Footer -->
+                <Border Grid.Row="2"
+                        Background="{StaticResource BrushSurfaceAlt}"
+                        CornerRadius="8"
+                        Padding="14"
+                        BorderBrush="{StaticResource BrushBorder}"
+                        BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="EXECUTIVE CURATOR"
+                                   FontSize="9"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource BrushGold}" />
+                        <TextBlock Text="{Binding CurrentUser.Name, FallbackValue='DE-GRACE Chief Curator'}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource BrushText}"
+                                   Margin="0,3,0,1" />
+                        <TextBlock Text="{Binding CurrentUser.Email, FallbackValue='admin@degrace.com'}"
+                                   FontSize="10"
+                                   Foreground="{StaticResource BrushTextMuted}"
+                                   Margin="0,0,0,10" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="6" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0"
+                                    Content="⚙️ CONFIG"
+                                    Style="{StaticResource OutlineButtonStyle}"
+                                    FontSize="10"
+                                    Padding="4,5"
+                                    Command="{Binding OpenSettingsCommand}" />
+                            <Button Grid.Column="2"
+                                    Content="SIGN OUT"
+                                    Style="{StaticResource OutlineButtonStyle}"
+                                    FontSize="10"
+                                    Padding="4,5"
+                                    Command="{Binding LogoutCommand}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Right Content Area -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Top Header Bar -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource BrushSurface}"
+                    BorderBrush="{StaticResource BrushBorder}"
+                    BorderThickness="0,0,0,1"
+                    Padding="30,0">
+                <Grid VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource BrushSuccess}" Margin="0,0,8,0" />
+                        <TextBlock Text="{Binding ServerUrl, StringFormat='LIVE BACKEND CONNECTED: {0}'}"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource BrushTextMuted}" />
+                    </StackPanel>
+
+                    <TextBlock Text="DE-GRACE HIGH COUTURE &amp; HOROLOGY"
+                               FontSize="10"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource BrushGold}"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Active View Content -->
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}" />
+        </Grid>
+
+        <!-- Server Configuration Modal Overlay -->
+        <Grid Grid.ColumnSpan="2"
+              Background="#D00A0A0C"
+              Visibility="{Binding IsSettingsModalOpen, Converter={StaticResource BoolToVis}}">
+            <Border Width="450"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource CardBorderStyle}"
+                    BorderBrush="{StaticResource BrushBorderGold}"
+                    Padding="28">
+                <StackPanel>
+                    <TextBlock Text="⚙️ BACKEND SERVER CONFIGURATION"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               FontFamily="Georgia"
+                               Foreground="{StaticResource BrushGold}"
+                               Margin="0,0,0,14" />
+
+                    <TextBlock Text="Configure the REST API endpoint URL. If running this desktop app on another PC on the same Wi-Fi or LAN, enter the host IP address (e.g. http://192.168.1.100/backend) or domain name."
+                               FontSize="12"
+                               Foreground="{StaticResource BrushTextMuted}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,16" />
+
+                    <TextBlock Text="BACKEND API URL" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushTextMuted}" Margin="0,0,0,4" />
+                    <TextBox Text="{Binding ServerUrl, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource DarkTextBoxStyle}" Margin="0,0,0,10" />
+
+                    <TextBlock Text="{Binding ServerConnectionStatus}"
+                               FontSize="12"
+                               Foreground="{StaticResource BrushGoldLight}"
+                               Margin="0,0,0,16" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="CANCEL" Style="{StaticResource OutlineButtonStyle}" Command="{Binding CloseSettingsCommand}" />
+                        <Button Grid.Column="2" Content="TEST &amp; SAVE" Style="{StaticResource GoldButtonStyle}" Command="{Binding SaveServerUrlCommand}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

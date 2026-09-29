@@ -1,0 +1,76 @@
+<UserControl x:Class="DeGraceAdmin.Views.CustomersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="PRIVÉ CLIENTELE" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushGold}" />
+                <TextBlock Text="Registered Customer Accounts" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="{StaticResource BrushText}" Margin="0,4,0,0" />
+            </StackPanel>
+
+            <Button Content="REFRESH" Style="{StaticResource OutlineButtonStyle}" Command="{Binding RefreshCommand}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- Search / Action Bar -->
+        <Grid Grid.Row="1" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource DarkTextBoxStyle}"
+                     Height="38" />
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Content="SUSPEND / ACTIVATE CLIENT ACCOUNT"
+                        Style="{StaticResource OutlineButtonStyle}"
+                        Foreground="{StaticResource BrushGold}"
+                        BorderBrush="{StaticResource BrushGold}"
+                        Command="{Binding ToggleStatusCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Customers DataGrid -->
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="0">
+            <DataGrid ItemsSource="{Binding Customers}"
+                      SelectedItem="{Binding SelectedCustomer}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      Background="Transparent"
+                      RowBackground="{StaticResource BrushSurface}"
+                      AlternatingRowBackground="{StaticResource BrushSurfaceAlt}"
+                      Foreground="{StaticResource BrushText}"
+                      BorderThickness="0"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="{StaticResource BrushBorder}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" />
+                    <DataGridTextColumn Header="Client Full Name" Binding="{Binding Name}" Width="220" />
+                    <DataGridTextColumn Header="Email Address" Binding="{Binding Email}" Width="240" />
+                    <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="140" />
+                    <DataGridTextColumn Header="Orders" Binding="{Binding OrderCount}" Width="80" />
+                    <DataGridTextColumn Header="Total Spent" Binding="{Binding FormattedTotalSpent}" Width="120" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90" />
+                    <DataGridTextColumn Header="Joined" Binding="{Binding CreatedAt}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>
+
+

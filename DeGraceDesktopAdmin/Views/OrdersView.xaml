@@ -1,0 +1,158 @@
+<UserControl x:Class="DeGraceAdmin.Views.OrdersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1100">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="FULFILLMENT &amp; LOGISTICS" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushGold}" />
+                <TextBlock Text="Client Orders Management" FontSize="24" FontWeight="Bold" FontFamily="Georgia" Foreground="{StaticResource BrushText}" Margin="0,4,0,0" />
+            </StackPanel>
+
+            <Button Content="REFRESH ORDERS" Style="{StaticResource OutlineButtonStyle}" Command="{Binding RefreshCommand}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- Filter / Search Bar -->
+        <Grid Grid.Row="1" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Search -->
+            <TextBox Grid.Column="0"
+                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource DarkTextBoxStyle}"
+                     Height="38" />
+
+            <!-- Status Filter Tabs -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <TextBlock Text="FILTER:" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushTextMuted}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                <ComboBox SelectedValue="{Binding StatusFilter}"
+                          SelectedValuePath="Tag"
+                          Width="160"
+                          Height="36"
+                          Background="{StaticResource BrushSurface}"
+                          Foreground="{StaticResource BrushText}">
+                    <ComboBoxItem Content="All Orders" Tag="all" IsSelected="True" />
+                    <ComboBoxItem Content="Pending" Tag="Pending" />
+                    <ComboBoxItem Content="Processing" Tag="Processing" />
+                    <ComboBoxItem Content="Shipped" Tag="Shipped" />
+                    <ComboBoxItem Content="Delivered" Tag="Delivered" />
+                    <ComboBoxItem Content="Cancelled" Tag="Cancelled" />
+                </ComboBox>
+            </StackPanel>
+        </Grid>
+
+        <!-- Orders Master-Detail Split Grid -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Orders List -->
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Padding="0">
+                <DataGrid ItemsSource="{Binding Orders}"
+                          SelectedItem="{Binding SelectedOrder}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          Background="Transparent"
+                          RowBackground="{StaticResource BrushSurface}"
+                          AlternatingRowBackground="{StaticResource BrushSurfaceAlt}"
+                          Foreground="{StaticResource BrushText}"
+                          BorderThickness="0"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="{StaticResource BrushBorder}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Order #" Binding="{Binding OrderNumber}" Width="130" />
+                        <DataGridTextColumn Header="Client Name" Binding="{Binding FullName}" Width="*" />
+                        <DataGridTextColumn Header="Total" Binding="{Binding FormattedTotal}" Width="100" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="90" />
+                        <DataGridTextColumn Header="Payment" Binding="{Binding PaymentStatus}" Width="85" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <!-- Right: Order Inspector -->
+            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" Padding="20">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Visibility="{Binding SelectedOrder, Converter={StaticResource NullToVis}}">
+                        <TextBlock Text="ORDER DOSSIER" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrushGold}" Margin="0,0,0,15" />
+
+                        <!-- Order Summary -->
+                        <TextBlock Text="{Binding SelectedOrder.OrderNumber}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushText}" />
+                        <TextBlock Text="{Binding SelectedOrder.CreatedAt, StringFormat='Placed on: {0}'}" FontSize="11" Foreground="{StaticResource BrushTextMuted}" Margin="0,2,0,12" />
+
+                        <Border Background="{StaticResource BrushSurfaceAlt}" CornerRadius="6" Padding="12" Margin="0,0,0,15">
+                            <StackPanel>
+                                <TextBlock Text="CLIENT &amp; DELIVERY" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushGold}" Margin="0,0,0,6" />
+                                <TextBlock Text="{Binding SelectedOrder.FullName}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource BrushText}" />
+                                <TextBlock Text="{Binding SelectedOrder.Email}" FontSize="12" Foreground="{StaticResource BrushTextMuted}" />
+                                <TextBlock Text="{Binding SelectedOrder.Phone}" FontSize="12" Foreground="{StaticResource BrushTextMuted}" />
+                                <TextBlock Text="{Binding SelectedOrder.Address}" FontSize="12" Foreground="{StaticResource BrushText}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Status Controls -->
+                        <TextBlock Text="UPDATE DISPATCH STATUS" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushTextMuted}" Margin="0,0,0,8" />
+                        <UniformGrid Columns="2" Rows="2" Margin="0,0,0,20">
+                            <Button Content="Set Processing" Style="{StaticResource OutlineButtonStyle}" Margin="2" Command="{Binding UpdateStatusCommand}" CommandParameter="Processing" />
+                            <Button Content="Set Shipped" Style="{StaticResource OutlineButtonStyle}" Margin="2" Command="{Binding UpdateStatusCommand}" CommandParameter="Shipped" />
+                            <Button Content="Set Delivered" Style="{StaticResource GoldButtonStyle}" Margin="2" Command="{Binding UpdateStatusCommand}" CommandParameter="Delivered" />
+                            <Button Content="Cancel Order" Style="{StaticResource OutlineButtonStyle}" Foreground="{StaticResource BrushDanger}" Margin="2" Command="{Binding UpdateStatusCommand}" CommandParameter="Cancelled" />
+                        </UniformGrid>
+
+                        <!-- Direct Client Chat & Dispatch Note -->
+                        <TextBlock Text="SEND DIRECT NOTE / CHAT TO CLIENT" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushGold}" Margin="0,15,0,6" />
+                        <TextBox Text="{Binding AdminNote, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource DarkTextBoxStyle}"
+                                 Height="50"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Margin="0,0,0,8" />
+                        <Button Content="SEND MESSAGE TO CLIENT"
+                                Style="{StaticResource GoldButtonStyle}"
+                                Command="{Binding SendNoteCommand}"
+                                Margin="0,0,0,15" />
+
+                        <!-- Line Items List -->
+                        <TextBlock Text="ORDER ITEMS" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrushGold}" Margin="0,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding CurrentOrderDetail.Items}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource BrushSurface}" CornerRadius="6" Padding="10" Margin="0,0,0,6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding ProductName}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BrushText}" />
+                                                <TextBlock Text="{Binding Quantity, StringFormat='Qty: {0}'}" FontSize="11" Foreground="{StaticResource BrushTextMuted}" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding FormattedSubtotal}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrushGold}" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
