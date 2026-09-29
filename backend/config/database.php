@@ -1,10 +1,10 @@
 <?php
 
-$host = getenv('DB_HOST') ?: "localhost";
-$dbname = getenv('DB_NAME') ?: "jumia_clone";
-$username = getenv('DB_USER') ?: "root";
-$password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : "";
-$port = getenv('DB_PORT') ?: "3306";
+$host = getenv('DB_HOST') ?: getenv('MYSQLHOST') ?: getenv('MYSQL_HOST') ?: "localhost";
+$dbname = getenv('DB_NAME') ?: getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: "jumia_clone";
+$username = getenv('DB_USER') ?: getenv('MYSQLUSER') ?: getenv('MYSQL_USER') ?: "root";
+$password = getenv('DB_PASSWORD') !== false ? getenv('DB_PASSWORD') : (getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : (getenv('MYSQL_ROOT_PASSWORD') !== false ? getenv('MYSQL_ROOT_PASSWORD') : ""));
+$port = getenv('DB_PORT') ?: getenv('MYSQLPORT') ?: getenv('MYSQL_PORT') ?: "3306";
 
 try {
 
