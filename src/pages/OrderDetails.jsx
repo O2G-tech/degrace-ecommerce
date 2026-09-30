@@ -1,424 +1,288 @@
-
-import {
-    useEffect,
-    useState
-} from "react";
-
-import {
-    Link,
-    useParams
-} from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
-import {
-    getOrder
-} from "../services/orderService";
+import { getOrder } from "../services/orderService";
 import { getImageUrl } from "../services/api";
-
+import "./styling/OrderDetails.css";
 
 function OrderDetails() {
+    const { id } = useParams();
 
-    const {
-        id
-    } = useParams();
-
-
-    const [order, setOrder] =
-        useState(null);
-
-
-    const [items, setItems] =
-        useState([]);
-
-
-    const [loading, setLoading] =
-        useState(true);
-
-
-    const [error, setError] =
-        useState("");
-
+    const [order, setOrder] = useState(null);
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-
         const loadOrder = async () => {
-
             try {
-
                 setLoading(true);
+                setError("");
 
+                const result = await getOrder(id);
 
-                const result =
-                    await getOrder(id);
-
-
-                console.log(
-                    "ORDER:",
-                    result
-                );
-
-
-                if (!result.success) {
-
-                    setError(
-                        result.message
-                    );
-
+                if (!result || !result.success) {
+                    setError(result?.message || "Failed to load order dossier.");
                     return;
                 }
 
-
-                setOrder(
-                    result.data.order
-                );
-
-
-                setItems(
-                    result.data.items
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                setError(
-                    "Failed to load order"
-                );
-
-
+                setOrder(result.data.order);
+                setItems(result.data.items || []);
+            } catch (err) {
+                console.error("ORDER DETAILS LOAD ERROR:", err);
+                setError(err.response?.data?.message || "Failed to load consignment details.");
             } finally {
-
                 setLoading(false);
-
             }
-
         };
 
-
-        loadOrder();
-
+        if (id) {
+            loadOrder();
+        }
     }, [id]);
 
-
-    const formatPrice = (
-        value
-    ) => {
-
-        return `₦${Number(
-            value || 0
-        ).toLocaleString()}`;
-
+    const formatPrice = (value) => {
+        return `₦${Number(value || 0).toLocaleString()}`;
     };
 
-
     if (loading) {
-
         return (
-
             <>
-
                 <Navbar />
-
-                <main>
-
-                    <p>
-                        Loading order...
-                    </p>
-
+                <main className="order-details-page">
+                    <div style={{ textAlign: "center", padding: "6rem 2rem" }}>
+                        <p style={{ fontFamily: "var(--font-serif)", fontSize: "1.3rem" }}>
+                            Retrieving Maison Consignment Dossier...
+                        </p>
+                    </div>
                 </main>
-
                 <Footer />
-
             </>
-
         );
-
     }
 
-
-    if (error) {
-
+    if (error || !order) {
         return (
-
             <>
-
                 <Navbar />
-
-                <main>
-
-                    <p className="error">
-                        {error}
-                    </p>
-
-                    <Link to="/orders">
-                        Back to My Orders
-                    </Link>
-
+                <main className="order-details-page">
+                    <div style={{ maxWidth: "600px", margin: "4rem auto", textAlign: "center", background: "#fff", padding: "3rem", borderRadius: "8px", border: "1px solid rgba(15,15,17,0.08)" }}>
+                        <p style={{ color: "#b33939", marginBottom: "1.5rem", fontSize: "1.1rem" }}>{error || "Order not found"}</p>
+                        <Link to="/orders" className="btn-view-dossier" style={{ display: "inline-block" }}>
+                            Return to My Orders Archive
+                        </Link>
+                    </div>
                 </main>
-
                 <Footer />
-
             </>
-
         );
-
     }
 
+    const getStatusClass = (status) => {
+        const s = (status || "").toLowerCase();
+        if (s.includes("delivered") || s.includes("completed")) return "delivered";
+        if (s.includes("shipped")) return "shipped";
+        if (s.includes("processing")) return "processing";
+        return "pending";
+    };
+
+    const isStepActive = (stepNum) => {
+        const s = order.status || "Pending";
+        if (stepNum === 1) return true;
+        if (stepNum === 2) return ["Processing", "Shipped", "Delivered", "Completed"].includes(s);
+        if (stepNum === 3) return ["Shipped", "Delivered", "Completed"].includes(s);
+        if (stepNum === 4) return ["Delivered", "Completed"].includes(s);
+        return false;
+    };
 
     return (
-
         <>
-
             <Navbar />
 
-
-            <main className="order-details">
-
-                <Link to="/orders">
-
-                    ← Back to My Orders
-
+            <main className="order-details-page">
+                <Link to="/orders" className="order-back-nav">
+                    ← Back to Order Archives
                 </Link>
 
+                <header className="order-header-editorial">
+                    <div>
+                        <span className="order-eyebrow">CONSIGNMENT DOSSIER</span>
+                        <h1 className="order-title">Order #{order.order_number}</h1>
+                        <p className="order-date-stamp">
+                            Placed on {order.created_at ? new Date(order.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "Recent"}
+                        </p>
+                    </div>
 
-                <h1>
+                    <span className={`status-badge-pill ${getStatusClass(order.status)}`}>
+                        ● {order.status || "Pending"}
+                    </span>
+                </header>
 
-                    Order #
-
-                    {order.order_number}
-
-                </h1>
-
-
-                {/* Interactive Luxury Order Tracker */}
-                <div className="order-tracker-card" style={{ background: '#121212', color: '#f5f3ef', borderRadius: '12px', padding: '24px', marginBottom: '28px', border: '1px solid rgba(197, 160, 89, 0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+                {/* Live Consignment Tracker */}
+                <section className="tracker-dossier-card">
+                    <div className="tracker-top-bar">
                         <div>
-                            <span style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.15em', color: '#c5a059', textTransform: 'uppercase' }}>Live Consignment Tracker</span>
-                            <h3 style={{ margin: '4px 0 0 0', fontSize: '1.25rem', color: '#ffffff' }}>Tracking Order: #{order.order_number}</h3>
+                            <span className="tracker-subheading">LIVE CONSIGNMENT STATUS</span>
+                            <h2 className="tracker-order-num">Tracking Reference: #{order.order_number}</h2>
                         </div>
-                        <span style={{ background: order.status === 'Delivered' || order.status === 'Completed' ? '#2e7d32' : (order.status === 'Shipped' ? '#1565c0' : (order.status === 'Processing' ? '#e65100' : '#c5a059')), color: '#fff', fontSize: '0.75rem', fontWeight: 800, padding: '6px 16px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                            {order.status || 'Pending'}
+                        <span className={`status-badge-pill ${getStatusClass(order.status)}`}>
+                            {order.status || "Pending"}
                         </span>
                     </div>
 
-                    {/* Timeline Steps */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '16px', position: 'relative', marginTop: '16px' }}>
-                        {[
-                            { label: 'Order Confirmed', step: 1, desc: 'Logged in Maison records', active: true },
-                            { label: 'Atelier Processing', step: 2, desc: 'Quality inspection & prep', active: ['Processing', 'Shipped', 'Delivered', 'Completed'].includes(order.status) },
-                            { label: 'Dispatched / In Transit', step: 3, desc: 'White-glove courier', active: ['Shipped', 'Delivered', 'Completed'].includes(order.status) },
-                            { label: 'Delivered & Complete', step: 4, desc: 'Safely received', active: ['Delivered', 'Completed'].includes(order.status) }
-                        ].map((s, idx) => (
-                            <div key={idx} style={{ textAlign: 'center', padding: '12px 8px', borderRadius: '8px', background: s.active ? 'rgba(197, 160, 89, 0.15)' : 'rgba(255,255,255,0.03)', border: s.active ? '1px solid #c5a059' : '1px solid rgba(255,255,255,0.08)' }}>
-                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: s.active ? '#c5a059' : '#333', color: s.active ? '#121212' : '#888', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px auto', fontSize: '0.85rem' }}>
-                                    {s.active ? '✓' : s.step}
-                                </div>
-                                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: s.active ? '#ffffff' : '#777', marginBottom: '2px' }}>{s.label}</div>
-                                <div style={{ fontSize: '0.68rem', color: s.active ? '#c5a059' : '#555' }}>{s.desc}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {order.admin_note && (
-                    <section className="admin-message-banner" style={{ background: '#1a1a1a', color: '#f5f3ef', padding: '20px 24px', borderRadius: '8px', marginBottom: '24px', borderLeft: '4px solid #c5a059' }}>
-                        <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.15em', color: '#c5a059', textTransform: 'uppercase', marginBottom: '6px' }}>
-                            💬 Concierge Message from Atelier Admin
+                    <div className="timeline-grid">
+                        <div className={`timeline-node ${isStepActive(1) ? "active" : ""}`}>
+                            <div className="timeline-node-circle">{isStepActive(1) ? "✓" : "1"}</div>
+                            <div className="timeline-node-title">Order Confirmed</div>
+                            <div className="timeline-node-desc">Logged in Maison records</div>
                         </div>
-                        <p style={{ fontSize: '0.95rem', margin: 0, lineHeight: 1.5 }}>
+
+                        <div className={`timeline-node ${isStepActive(2) ? "active" : ""}`}>
+                            <div className="timeline-node-circle">{isStepActive(2) ? "✓" : "2"}</div>
+                            <div className="timeline-node-title">Atelier Processing</div>
+                            <div className="timeline-node-desc">Quality inspection &amp; prep</div>
+                        </div>
+
+                        <div className={`timeline-node ${isStepActive(3) ? "active" : ""}`}>
+                            <div className="timeline-node-circle">{isStepActive(3) ? "✓" : "3"}</div>
+                            <div className="timeline-node-title">Dispatched / Courier</div>
+                            <div className="timeline-node-desc">White-glove priority transit</div>
+                        </div>
+
+                        <div className={`timeline-node ${isStepActive(4) ? "active" : ""}`}>
+                            <div className="timeline-node-circle">{isStepActive(4) ? "✓" : "4"}</div>
+                            <div className="timeline-node-title">Delivered &amp; Complete</div>
+                            <div className="timeline-node-desc">Safely received by client</div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Concierge Message from Atelier Admin */}
+                {order.admin_note && (
+                    <section className="concierge-chat-card">
+                        <div className="concierge-chat-header">
+                            💬 Direct Message from DE-GRACE Chief Curator
+                        </div>
+                        <p className="concierge-chat-body">
                             "{order.admin_note}"
                         </p>
                     </section>
                 )}
 
+                {/* Dossier Grid */}
+                <div className="order-dossier-grid">
+                    {/* Left: Purchased Products */}
+                    <div className="order-card-panel">
+                        <h2 className="panel-header-title">
+                            <span>Acquired Couture Pieces</span>
+                            <span className="panel-item-count">{items.length} {items.length === 1 ? "Piece" : "Pieces"}</span>
+                        </h2>
 
-                <section>
+                        <div className="order-items-table">
+                            {items.map((item) => {
+                                const imageUrl = item.image ? getImageUrl("products", item.image) : "";
+                                const lineTotal = item.subtotal !== undefined ? Number(item.subtotal) : Number(item.price || 0) * Number(item.quantity || 1);
 
-                    <h2>
-                        Delivery Information
-                    </h2>
+                                return (
+                                    <div className="order-line-item" key={item.id}>
+                                        {imageUrl ? (
+                                            <img
+                                                src={imageUrl}
+                                                alt={item.product_name}
+                                                className="order-line-thumb"
+                                            />
+                                        ) : (
+                                            <div className="order-no-thumb">DG</div>
+                                        )}
 
+                                        <div className="order-line-info">
+                                            <h3 className="order-line-title">{item.product_name}</h3>
+                                            <div className="order-line-meta">
+                                                Qty: {item.quantity} × {formatPrice(item.price)}
+                                            </div>
+                                        </div>
 
-                    <p>
-                        <strong>Name:</strong>{" "}
-                        {order.full_name}
-                    </p>
+                                        <div className="order-line-subtotal">
+                                            {formatPrice(lineTotal)}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
 
+                    {/* Right: Delivery Information & Financial Breakdown */}
+                    <aside>
+                        <div className="order-card-panel">
+                            <h2 className="panel-header-title">
+                                <span>Delivery Destination</span>
+                            </h2>
 
-                    <p>
-                        <strong>Phone:</strong>{" "}
-                        {order.phone}
-                    </p>
-
-
-                    <p>
-                        <strong>Email:</strong>{" "}
-                        {order.email}
-                    </p>
-
-
-                    <p>
-                        <strong>Address:</strong>{" "}
-                        {order.address}
-                    </p>
-
-
-                    <p>
-                        <strong>City:</strong>{" "}
-                        {order.city}
-                    </p>
-
-
-                    <p>
-                        <strong>State:</strong>{" "}
-                        {order.state}
-                    </p>
-
-                </section>
-
-
-                <section>
-
-                    <h2>
-                        Products
-                    </h2>
-
-
-                    {items.map(
-                        (item) => (
-
-                            <div
-                                key={
-                                    item.id
-                                }
-                                className="order-item"
-                            >
-
-                                {item.image && (
-
-                                    <img
-                                        src={
-                                            getImageUrl("products", item.image)
-                                        }
-                                        alt={
-                                            item.product_name
-                                        }
-                                        width="80"
-                                    />
-
-                                )}
-
-
-                                <div>
-
-                                    <h3>
-                                        {
-                                            item.product_name
-                                        }
-                                    </h3>
-
-
-                                    <p>
-
-                                        {
-                                            formatPrice(
-                                                item.price
-                                            )
-                                        }
-
-                                        {" × "}
-
-                                        {
-                                            item.quantity
-                                        }
-
-                                    </p>
-
-
-                                    <strong>
-
-                                        {
-                                            formatPrice(
-                                                item.subtotal
-                                            )
-                                        }
-
-                                    </strong>
-
+                            <div className="dossier-info-list">
+                                <div className="dossier-info-row">
+                                    <span className="dossier-info-label">Client Name</span>
+                                    <span className="dossier-info-val">{order.full_name}</span>
                                 </div>
 
+                                <div className="dossier-info-row">
+                                    <span className="dossier-info-label">Telephone</span>
+                                    <span className="dossier-info-val">{order.phone}</span>
+                                </div>
+
+                                <div className="dossier-info-row">
+                                    <span className="dossier-info-label">Email</span>
+                                    <span className="dossier-info-val">{order.email}</span>
+                                </div>
+
+                                <div className="dossier-info-row">
+                                    <span className="dossier-info-label">Street Address</span>
+                                    <span className="dossier-info-val">{order.address}</span>
+                                </div>
+
+                                <div className="dossier-info-row">
+                                    <span className="dossier-info-label">City / State</span>
+                                    <span className="dossier-info-val">{order.city}, {order.state}</span>
+                                </div>
+
+                                <div className="dossier-info-row">
+                                    <span className="dossier-info-label">Delivery Service</span>
+                                    <span className="dossier-info-val" style={{ textTransform: "capitalize" }}>
+                                        {order.delivery_method || "Standard"}
+                                    </span>
+                                </div>
                             </div>
+                        </div>
 
-                        )
-                    )}
+                        <div className="order-card-panel">
+                            <h2 className="panel-header-title">
+                                <span>Financial Summary</span>
+                            </h2>
 
-                </section>
+                            <div className="financial-summary-box">
+                                <div className="financial-row">
+                                    <span>Subtotal</span>
+                                    <strong>{formatPrice(order.subtotal)}</strong>
+                                </div>
 
+                                <div className="financial-row">
+                                    <span>White-Glove Dispatch</span>
+                                    <strong>{formatPrice(order.delivery_fee)}</strong>
+                                </div>
 
-                <section>
-
-                    <h2>
-                        Order Summary
-                    </h2>
-
-
-                    <p>
-
-                        Subtotal:
-
-                        {" "}
-
-                        {formatPrice(
-                            order.subtotal
-                        )}
-
-                    </p>
-
-
-                    <p>
-
-                        Delivery:
-
-                        {" "}
-
-                        {formatPrice(
-                            order.delivery_fee
-                        )}
-
-                    </p>
-
-
-                    <h2>
-
-                        Total:
-
-                        {" "}
-
-                        {formatPrice(
-                            order.total
-                        )}
-
-                    </h2>
-
-                </section>
-
+                                <div className="financial-row grand-total">
+                                    <span>Total Settled</span>
+                                    <span className="grand-total-amount">{formatPrice(order.total)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
             </main>
 
-
             <Footer />
-
         </>
-
     );
-
 }
-
 
 export default OrderDetails;
