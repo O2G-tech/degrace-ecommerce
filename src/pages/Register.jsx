@@ -172,10 +172,20 @@ function Register() {
                         ? "Creating Account..."
                         : "Register"}
                 </button>
-                <span> Already have an account?</span><Link to="/login">Login</Link>
 
+                <div className="auth-links-row" style={{ justifyContent: "center" }}>
+                    <span style={{ color: "#71695f" }}>Already a registered client?</span>
+                    <Link to="/login" className="auth-touch-link" style={{ fontWeight: 800 }}>
+                        Sign In to Privé Salon
+                    </Link>
+                </div>
+
+                <div className="auth-return-home">
+                    <Link to="/">
+                        ← Return to DE-GRACE Home Editorial
+                    </Link>
+                </div>
             </form>
-
         </div>
     );
 }

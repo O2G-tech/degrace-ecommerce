@@ -82,17 +82,20 @@ function Login() {
                     {loading ? "AUTHENTICATING..." : "ENTER PRIVÉ SALON"}
                 </button>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", fontSize: "0.88rem" }}>
-                    <Link to="/forgot-password" style={{ color: "var(--boutique-gold)", textDecoration: "none" }}>
+                <div className="auth-links-row">
+                    <Link to="/forgot-password" className="auth-touch-link">
                         Forgot Password?
                     </Link>
-                    <span>
-                        New client? <Link to="/register" style={{ color: "var(--boutique-gold)", fontWeight: 700 }}>Apply for Membership</Link>
-                    </span>
+                    <div style={{ color: "#71695f", fontSize: "0.9rem" }}>
+                        New client?{" "}
+                        <Link to="/register" className="auth-touch-link" style={{ fontWeight: 800 }}>
+                            Apply for Membership
+                        </Link>
+                    </div>
                 </div>
 
-                <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
-                    <Link to="/" style={{ color: "#71695f", fontSize: "0.85rem", textDecoration: "none" }}>
+                <div className="auth-return-home">
+                    <Link to="/">
                         ← Return to DE-GRACE Home Editorial
                     </Link>
                 </div>

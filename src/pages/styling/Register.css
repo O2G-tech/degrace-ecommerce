@@ -26,8 +26,9 @@
   background: var(--boutique-cream);
   font-family: "Outfit", sans-serif;
   color: var(--boutique-dark);
-  overflow: hidden;
+  overflow-x: hidden;
   padding: 3rem 3rem 3rem calc(50% + 3.5rem);
+  z-index: 1;
 }
 
 /* ---------------- Left brand panel: editorial imagery + overlay ---------------- */
@@ -54,6 +55,8 @@
   color: #dfc285;
   text-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
   white-space: pre-line;
+  pointer-events: none !important;
+  z-index: 0;
 }
 
 /* ---------------- Left brand panel: editorial benefits & tagline ---------------- */
@@ -75,14 +78,18 @@
   line-height: 2.1;
   letter-spacing: 0.02em;
   font-family: "Outfit", sans-serif;
+  pointer-events: none !important;
+  z-index: 0;
 }
 
-/* ---------------- Right side: registration form ---------------- */
+/* ---------------- Right side: registration/login form ---------------- */
 .auth-page > h1,
 .auth-page > p,
 .auth-page > form {
   width: 100%;
   max-width: 440px;
+  position: relative;
+  z-index: 10;
 }
 
 .auth-page > h1 {
@@ -135,6 +142,7 @@
   font-size: 0.98rem;
   color: var(--boutique-dark);
   transition: all 0.25s ease;
+  box-sizing: border-box;
 }
 
 .auth-page > form input::placeholder {
@@ -164,6 +172,7 @@
   border: 1px solid var(--boutique-gold);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+  touch-action: manipulation;
 }
 
 .auth-page > form button:hover:not(:disabled) {
@@ -182,43 +191,88 @@
   box-shadow: none;
 }
 
-.auth-page > form span {
-  font-size: 0.92rem;
-  color: #71695f;
-  margin-top: 0.5rem;
-  text-align: center;
+/* Luxury Touch-Friendly Action Links */
+.auth-links-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
+  gap: 1rem;
+  position: relative;
+  z-index: 20;
 }
 
-.auth-page > form a {
+.auth-touch-link {
+  display: inline-block;
+  padding: 10px 8px;
+  font-size: 0.92rem;
   color: var(--boutique-gold);
   font-weight: 700;
-  margin-left: 0.35rem;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  position: relative;
+  z-index: 25;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.auth-touch-link:hover,
+.auth-touch-link:active {
+  color: #9e7934;
   text-decoration: underline;
-  text-underline-offset: 4px;
+}
+
+.auth-return-home {
+  text-align: center;
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 20;
+}
+
+.auth-return-home a {
+  display: inline-block;
+  padding: 8px 12px;
+  color: #71695f;
+  font-size: 0.88rem;
+  text-decoration: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.auth-return-home a:hover {
+  color: var(--boutique-gold);
 }
 
 /* ---------------- Responsive: stack panels below ~900px ---------------- */
 @media (max-width: 900px) {
   .auth-page {
-    padding: 260px 1.5rem 3rem;
+    padding: 220px 1.5rem 4rem;
     justify-content: flex-start;
   }
 
   .auth-page::before {
     width: 100%;
-    height: 240px;
+    height: 190px;
     bottom: auto;
-    padding: 2rem 0 0 2rem;
-    font-size: 1.8rem;
+    padding: 2rem 0 0 1.5rem;
+    font-size: 1.6rem;
     clip-path: none;
   }
 
   .auth-page::after {
-    width: 100%;
-    height: 240px;
-    padding: 0 2rem 1.25rem;
-    font-size: 0.82rem;
-    line-height: 1.6;
-    clip-path: none;
+    display: none !important;
+  }
+
+  .auth-links-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+  }
+
+  .auth-touch-link {
+    padding: 12px 16px;
+    font-size: 0.95rem;
   }
 }
