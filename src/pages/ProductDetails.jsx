@@ -83,11 +83,16 @@ function ProductDetails() {
             }
         } catch (err) {
             console.error("ADD TO CART ERROR:", err);
-            if (err.response && err.response.status === 401) {
-                alert("Please sign in to your client account to add to shopping bag.");
+            const status = err.response?.status;
+            const message = err.response?.data?.message;
+
+            if (status === 401 || status === 403) {
+                alert("Your session has expired or you need to sign in. Please log in to your client account.");
                 navigate("/login");
+            } else if (message) {
+                alert(message);
             } else {
-                alert("Something went wrong. Please try again.");
+                alert("Could not add item to bag. Please ensure you are logged in.");
             }
         } finally {
             setAdding(false);

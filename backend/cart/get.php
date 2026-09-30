@@ -10,24 +10,20 @@ $userId = requireLogin();
 
 $stmt = $pdo->prepare("
     SELECT
-    ci.id,
-    ci.product_id,
-    ci.quantity,
-
-    p.name,
-    p.price,
-    p.image
-
-FROM cart_items ci
-
-INNER JOIN products p
-    ON p.id = ci.product_id
-
-WHERE ci.cart_id = ?
-
+        ci.id,
+        ci.product_id,
+        ci.quantity,
+        p.name,
+        p.price,
+        p.image
+    FROM cart_items ci
+    INNER JOIN cart c
+        ON c.id = ci.cart_id
+    INNER JOIN products p
+        ON p.id = ci.product_id
+    WHERE c.user_id = ?
     ORDER BY ci.id DESC
 ");
-
 
 $stmt->execute([
     $userId
