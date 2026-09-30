@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import './index.css';
+import './pages/styling/MobileResponsive.css';
 import App from './App.jsx';
 
 function RootApp() {

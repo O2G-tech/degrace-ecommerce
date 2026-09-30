@@ -1,0 +1,376 @@
+/* ==========================================================================
+   DE-GRACE CLASSIC BOUTIQUE — COMPREHENSIVE GLOBAL MOBILE RESPONSIVENESS
+   Ensures 100% fluid, pixel-perfect layout across all screens (320px – 1440px+)
+   ========================================================================== */
+
+/* ── Prevent any horizontal overflow ── */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* ── Responsive Image & Media defaults ── */
+img, picture, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Global Container Fluidity ── */
+.page-container,
+.magazine-container,
+.navbar-container,
+.footer-container,
+.cart-page,
+.checkout-page,
+.order-details-page,
+.orders-page {
+  width: 100%;
+  max-width: 1360px;
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   TABLET BREAKPOINTS (max-width: 1024px)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  /* Header & Navigation */
+  .nav-primary-links {
+    display: none !important;
+  }
+
+  .mobile-menu-toggle {
+    display: flex !important;
+  }
+
+  .search-container {
+    width: 130px;
+  }
+
+  .search-container:focus-within {
+    width: 170px;
+  }
+
+  .nav-action-label {
+    display: none !important;
+  }
+
+  /* Cart & Checkout grids */
+  .cart-layout-grid,
+  .checkout-grid,
+  .order-dossier-grid,
+  .product-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .cart-summary-card,
+  .checkout-summary-card {
+    position: static !important;
+    top: auto !important;
+    width: 100% !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE BREAKPOINTS (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Typography scale down for small screens */
+  h1, .hero-title, .cart-title, .checkout-title, .orders-title, .order-title {
+    font-size: clamp(1.8rem, 6vw, 2.4rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  h2, .section-title, .summary-heading {
+    font-size: clamp(1.4rem, 4.5vw, 1.8rem) !important;
+  }
+
+  /* Editorial Ticker */
+  .editorial-ticker {
+    padding: 4px 0;
+  }
+  .ticker-content {
+    font-size: 0.62rem;
+    gap: 1rem;
+  }
+
+  /* Header & Logo */
+  .navbar-container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    gap: 0.5rem;
+  }
+
+  .logo-main {
+    font-size: 1.35rem !important;
+    letter-spacing: 0.15em !important;
+  }
+
+  .logo-sub {
+    font-size: 0.48rem !important;
+    letter-spacing: 0.3em !important;
+  }
+
+  .search-container {
+    display: none !important; /* Replaced by mobile drawer search */
+  }
+
+  .nav-actions {
+    gap: 0.5rem !important;
+  }
+
+  .nav-action-btn {
+    padding: 6px 8px !important;
+  }
+
+  /* Mobile Notification Dropdown */
+  .notif-dropdown-card {
+    position: fixed !important;
+    top: 70px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    z-index: 100000 !important;
+  }
+
+  /* Products & Shop Grids */
+  .magazine-products-grid,
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  .product-card {
+    padding: 0 !important;
+  }
+
+  .product-info {
+    padding: 0.75rem 0.5rem !important;
+  }
+
+  .product-title {
+    font-size: 0.95rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .product-price {
+    font-size: 1.05rem !important;
+  }
+
+  /* Product Details Page */
+  .product-details-wrapper {
+    padding: 1rem 0.75rem 3rem !important;
+  }
+
+  .product-main-media {
+    max-height: 380px !important;
+    overflow: hidden;
+  }
+
+  .product-main-media img {
+    object-fit: contain !important;
+    max-height: 380px !important;
+    margin: 0 auto;
+  }
+
+  .product-thumbnails {
+    gap: 0.5rem !important;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .thumb-btn {
+    width: 60px !important;
+    height: 75px !important;
+    flex-shrink: 0;
+  }
+
+  .spec-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.2rem;
+  }
+
+  /* Cart Page */
+  .cart-page {
+    padding: 1.5rem 0.75rem 4rem !important;
+  }
+
+  .cart-header-editorial {
+    margin-bottom: 2rem !important;
+  }
+
+  .cart-item-card {
+    grid-template-columns: 85px 1fr !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+  }
+
+  .cart-thumbnail-wrapper {
+    width: 85px !important;
+    height: 105px !important;
+  }
+
+  .cart-item-title {
+    font-size: 1.05rem !important;
+  }
+
+  .cart-item-total-col {
+    grid-column: span 2 !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-top: 1px solid rgba(15, 15, 17, 0.08) !important;
+    padding-top: 0.75rem !important;
+    margin-top: 0.4rem !important;
+  }
+
+  .cart-summary-card {
+    padding: 1.5rem 1.2rem !important;
+  }
+
+  /* Checkout Page */
+  .checkout-page {
+    padding: 1.5rem 0.75rem 4rem !important;
+  }
+
+  .checkout-section-card {
+    padding: 1.5rem 1.2rem !important;
+  }
+
+  .form-row-duo,
+  .form-row-trio,
+  .options-card-group {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .checkout-summary-card {
+    padding: 1.5rem 1.2rem !important;
+  }
+
+  /* Orders & Order Details Page */
+  .order-details-page,
+  .orders-page {
+    padding: 1.5rem 0.75rem 4rem !important;
+  }
+
+  .tracker-dossier-card {
+    padding: 1.4rem 1rem !important;
+  }
+
+  .timeline-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .timeline-node {
+    padding: 0.9rem 0.5rem !important;
+  }
+
+  .order-card-panel {
+    padding: 1.4rem 1rem !important;
+  }
+
+  .order-line-item {
+    grid-template-columns: 65px 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .order-line-thumb {
+    width: 65px !important;
+    height: 80px !important;
+  }
+
+  .order-line-subtotal {
+    grid-column: span 2;
+    text-align: right;
+    border-top: 1px dashed rgba(15, 15, 17, 0.06);
+    padding-top: 0.4rem;
+  }
+
+  .order-history-card {
+    padding: 1.2rem 1rem !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .order-history-status-wrap {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  /* Client Account / Portal */
+  .client-portal-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .client-card {
+    padding: 1.5rem 1.2rem !important;
+  }
+
+  /* Footer Mobile */
+  .site-footer,
+  footer {
+    padding: 3rem 1rem 2rem !important;
+  }
+
+  .footer-grid,
+  .footer-container {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    text-align: center !important;
+  }
+
+  .footer-column {
+    align-items: center !important;
+  }
+
+  .footer-newsletter-form {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .footer-newsletter-form input,
+  .footer-newsletter-form button {
+    width: 100% !important;
+    border-radius: 4px !important;
+  }
+}
+
+/* ==========================================================================
+   EXTRA SMALL PHONES (max-width: 400px)
+   ========================================================================== */
+@media (max-width: 400px) {
+  .logo-main {
+    font-size: 1.15rem !important;
+  }
+
+  .timeline-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cart-item-card {
+    grid-template-columns: 70px 1fr !important;
+  }
+
+  .cart-thumbnail-wrapper {
+    width: 70px !important;
+    height: 85px !important;
+  }
+
+  .magazine-products-grid,
+  .products-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
