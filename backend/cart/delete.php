@@ -1,8 +1,9 @@
 <?php
 
-require_once "../helpers/cors.php";
-require_once "../helpers/response.php";
-require_once "../config/database.php";
+require_once "../helpers/cors.php";
+require_once "../helpers/response.php";
+require_once "../config/database.php";
+require_once "../helpers/auth.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
@@ -53,32 +54,7 @@ if ($cartItemId <= 0) {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| Get logged-in user
-|--------------------------------------------------------------------------
-|
-| This assumes your login system stores user_id
-| in the PHP session.
-|--------------------------------------------------------------------------
-*/
-
-session_start();
-
-$userId = $_SESSION["user_id"] ?? null;
-
-
-if (!$userId) {
-
-    response(
-        false,
-        "Please login to manage your cart",
-        null,
-        401
-    );
-
-    exit;
-}
+$userId = requireLogin();
 
 
 try {

@@ -1,10 +1,9 @@
 <?php
 
-session_start();
-
 require_once "../helpers/cors.php";
 require_once "../helpers/response.php";
 require_once "../config/database.php";
+require_once "../helpers/auth.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
@@ -18,22 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
+$userId = requireLogin();
 
-// Check login
-if (!isset($_SESSION["user_id"])) {
-
-    response(
-        false,
-        "Please login to write a review",
-        null,
-        401
-    );
-
-    exit;
-}
-
-
-$userId = (int) $_SESSION["user_id"];
 
 
 $data = json_decode(

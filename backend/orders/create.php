@@ -1,10 +1,9 @@
 <?php
 
-require_once "../helpers/cors.php";
-require_once "../helpers/response.php";
-require_once "../config/database.php";
-
-session_start();
+require_once "../helpers/cors.php";
+require_once "../helpers/response.php";
+require_once "../config/database.php";
+require_once "../helpers/auth.php";
 
 /*
 |--------------------------------------------------------------------------
@@ -31,19 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 |--------------------------------------------------------------------------
 */
 
-if (!isset($_SESSION["user_id"])) {
-
-    response(
-        false,
-        "Please login before creating an order",
-        null,
-        401
-    );
-
-    exit;
-}
-
-$userId = (int) $_SESSION["user_id"];
+$userId = requireLogin();
 
 
 /*
