@@ -162,7 +162,7 @@ namespace DeGraceAdmin.Services
         // ================= PRODUCTS =================
         public async Task<ApiResponse<List<Product>>> GetProductsAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/products/get.php");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/products/admin_get.php");
             return await SendRequestAsync<List<Product>>(request);
         }
 

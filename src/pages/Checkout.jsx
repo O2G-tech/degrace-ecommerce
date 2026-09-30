@@ -1,939 +1,430 @@
-import { createOrder } from "../services/orderService";
-import {
-    useEffect,
-    useState
-} from "react";
-
-import {
-    useNavigate
-} from "react-router-dom";
-
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
-import {
-    getCart
-} from "../services/cartService";
-
-import {
-    initializePayment
-} from "../services/paymentService";
-
+import { getCart } from "../services/cartService";
+import { createOrder } from "../services/orderService";
+import { initializePayment } from "../services/paymentService";
+import { getImageUrl } from "../services/api";
+import "./styling/Checkout.css";
 
 function Checkout() {
-
     const navigate = useNavigate();
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Form data
-    |--------------------------------------------------------------------------
-    */
-
     const [formData, setFormData] = useState({
-
         full_name: "",
         phone: "",
         email: "",
         address: "",
-        state: "",
-        city: "",
+        state: "FCT",
+        city: "Abuja",
         postal_code: ""
-
     });
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Delivery and payment
-    |--------------------------------------------------------------------------
-    */
-
-    const [deliveryMethod, setDeliveryMethod] =
-        useState("standard");
-
-
-    const [paymentMethod, setPaymentMethod] =
-        useState("pay_on_delivery");
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cart
-    |--------------------------------------------------------------------------
-    */
-
-    const [cart, setCart] =
-        useState(null);
-
-
-    const [loading, setLoading] =
-        useState(true);
-
-
-    const [error, setError] =
-        useState("");
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Delivery prices
-    |--------------------------------------------------------------------------
-    */
+    const [deliveryMethod, setDeliveryMethod] = useState("standard");
+    const [paymentMethod, setPaymentMethod] = useState("pay_on_delivery");
+    const [cart, setCart] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
 
     const deliveryPrices = {
-
         standard: 5000,
-
         express: 10000
-
     };
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Load cart
-    |--------------------------------------------------------------------------
-    */
 
     useEffect(() => {
-
         const loadCart = async () => {
-
             try {
-
                 setLoading(true);
-
                 setError("");
 
+                const result = await getCart();
 
-                const result =
-                    await getCart();
-
-
-                console.log(
-                    "CHECKOUT CART:",
-                    result
-                );
-
-
-                if (!result.success) {
-
-                    setError(
-                        result.message ||
-                        "Failed to load cart"
-                    );
-
+                if (!result || !result.success) {
+                    setError(result?.message || "Failed to load shopping bag.");
                     return;
                 }
 
-
-                /*
-                |--------------------------------------------------------------------------
-                | Don't allow checkout with empty cart
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    !result.data ||
-                    !result.data.items ||
-                    result.data.items.length === 0
-                ) {
-
-                    setError(
-                        "Your cart is empty."
-                    );
-
+                if (!result.data || !result.data.items || result.data.items.length === 0) {
+                    setError("Your boutique shopping bag is empty.");
                     return;
                 }
 
-
-                setCart(
-                    result.data
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "CHECKOUT ERROR:",
-                    error
-                );
-
-
-                if (
-                    error.response?.status === 401
-                ) {
-
-                    navigate(
-                        "/login?redirect=/checkout"
-                    );
-
+                setCart(result.data);
+            } catch (err) {
+                console.error("CHECKOUT CART ERROR:", err);
+                if (err.response?.status === 401) {
+                    navigate("/login?redirect=/checkout");
                     return;
-
                 }
-
-
-                setError(
-                    "Failed to load checkout."
-                );
-
-
+                setError("Unable to connect to boutique server for checkout.");
             } finally {
-
                 setLoading(false);
-
             }
-
         };
-
 
         loadCart();
-
     }, [navigate]);
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Handle input
-    |--------------------------------------------------------------------------
-    */
-
     const handleChange = (e) => {
-
-        const {
-            name,
-            value
-        } = e.target;
-
-
-        setFormData({
-
-            ...formData,
-
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
             [name]: value
-
-        });
-
+        }));
     };
 
+    const calculateSubtotal = () => {
+        if (!cart?.items) return 0;
+        return cart.items.reduce((acc, item) => {
+            const price = Number(item.price || 0);
+            const qty = Number(item.quantity || 1);
+            return acc + (price * qty);
+        }, 0);
+    };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Submit checkout information
-    |--------------------------------------------------------------------------
-    */
+    const getDeliveryFee = () => {
+        return deliveryPrices[deliveryMethod] || 5000;
+    };
 
-     
-const handleSubmit = async (e) => {
+    const getTotal = () => {
+        return calculateSubtotal() + getDeliveryFee();
+    };
 
-    e.preventDefault();
+    const formatPrice = (val) => {
+        return `₦${Number(val || 0).toLocaleString()}`;
+    };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validate form
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        !formData.full_name ||
-        !formData.phone ||
-        !formData.email ||
-        !formData.address ||
-        !formData.state ||
-        !formData.city
-    ) {
-
-        alert(
-            "Please fill in all required fields."
-        );
-
-        return;
-    }
-
-
-    try {
-
-        setLoading(true);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Prepare order data
-        |--------------------------------------------------------------------------
-        */
-
-        const orderData = {
-
-            full_name:
-                formData.full_name,
-
-            phone:
-                formData.phone,
-
-            email:
-                formData.email,
-
-            address:
-                formData.address,
-
-            state:
-                formData.state,
-
-            city:
-                formData.city,
-
-            postal_code:
-                formData.postal_code,
-
-            delivery_method:
-                deliveryMethod,
-
-            payment_method:
-                paymentMethod
-
-        };
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Create order
-        |--------------------------------------------------------------------------
-        */
-
-        const result =
-            await createOrder(
-                orderData
-            );
-
-
-        console.log(
-            "CREATE ORDER RESPONSE:",
-            result
-        );
-
-
-        if (!result.success) {
-
-            alert(
-                result.message ||
-                "Failed to create order"
-            );
-
+        if (!formData.full_name || !formData.phone || !formData.email || !formData.address || !formData.state || !formData.city) {
+            alert("Please complete all required delivery details.");
             return;
         }
 
+        try {
+            setSubmitting(true);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Save order information
-        |--------------------------------------------------------------------------
-        */
+            const orderData = {
+                full_name: formData.full_name,
+                phone: formData.phone,
+                email: formData.email,
+                address: formData.address,
+                state: formData.state,
+                city: formData.city,
+                postal_code: formData.postal_code,
+                delivery_method: deliveryMethod,
+                payment_method: paymentMethod
+            };
 
-        localStorage.setItem(
+            const result = await createOrder(orderData);
 
-            "lastOrder",
-
-            JSON.stringify(
-                result.data
-            )
-
-        );
-
-
-        if (paymentMethod === "online_payment") {
-
-            const payment = await initializePayment(
-                result.data.order_id,
-                formData.email
-            );
-
-            if (!payment.success) {
-                alert(
-                    payment.message ||
-                    "Failed to initialize payment"
-                );
+            if (!result || !result.success) {
+                alert(result?.message || "Failed to place atelier order.");
                 return;
             }
 
-            window.location.assign(
-                payment.data.authorization_url
-            );
+            localStorage.setItem("lastOrder", JSON.stringify(result.data));
 
-        } else {
-
-            navigate(
-                `/orders/${result.data.order_id}`
-            );
+            if (paymentMethod === "online_payment") {
+                const payment = await initializePayment(result.data.order_id, formData.email);
+                if (!payment.success) {
+                    alert(payment.message || "Failed to initialize online payment.");
+                    return;
+                }
+                window.location.assign(payment.data.authorization_url);
+            } else {
+                navigate(`/orders/${result.data.order_id}`);
+            }
+        } catch (err) {
+            console.error("ORDER CREATION ERROR:", err);
+            alert(err.response?.data?.message || "Something went wrong while placing your order.");
+        } finally {
+            setSubmitting(false);
         }
-
-
-    } catch (error) {
-
-        console.error(
-            "CREATE ORDER ERROR:",
-            error
-        );
-
-
-        alert(
-            "Something went wrong while creating your order."
-        );
-
-
-    } finally {
-
-        setLoading(false);
-
-    }
-
-};
-
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Format price
-    |--------------------------------------------------------------------------
-    */
-
-    const formatPrice = (
-        value
-    ) => {
-
-        return `₦${Number(
-            value || 0
-        ).toLocaleString()}`;
-
     };
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Loading
-    |--------------------------------------------------------------------------
-    */
-
     if (loading) {
-
         return (
-
             <>
-
                 <Navbar />
-
                 <main className="checkout-page">
-
-                    <p>
-                        Loading checkout...
-                    </p>
-
+                    <div style={{ textAlign: "center", padding: "6rem 2rem" }}>
+                        <p style={{ fontFamily: "var(--font-serif)", fontSize: "1.3rem" }}>
+                            Preparing Maison Concierge Checkout...
+                        </p>
+                    </div>
                 </main>
-
                 <Footer />
-
             </>
-
         );
-
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Error
-    |--------------------------------------------------------------------------
-    */
 
     if (error) {
-
         return (
-
             <>
-
                 <Navbar />
-
                 <main className="checkout-page">
-
-                    <h1>
-                        Checkout
-                    </h1>
-
-
-                    <p className="error">
-                        {error}
-                    </p>
-
-
-                    <button
-                        onClick={() =>
-                            navigate(
-                                "/cart"
-                            )
-                        }
-                    >
-                        Return to Cart
-                    </button>
-
+                    <div className="checkout-section-card" style={{ maxWidth: "600px", margin: "4rem auto", textAlign: "center" }}>
+                        <p style={{ color: "#b33939", marginBottom: "1.5rem", fontSize: "1.1rem" }}>{error}</p>
+                        <Link to="/products" className="checkout-submit-btn" style={{ textDecoration: "none", display: "inline-block" }}>
+                            Explore Couture Collections
+                        </Link>
+                    </div>
                 </main>
-
                 <Footer />
-
             </>
-
         );
-
     }
 
-
     return (
-
         <>
-
             <Navbar />
 
-
             <main className="checkout-page">
-
-                <h1>
-                    Checkout
-                </h1>
-
-
-                <form
-                    onSubmit={
-                        handleSubmit
-                    }
-                >
-
-
-                    {/* ======================================================
-                        DELIVERY INFORMATION
-                    ====================================================== */}
-
-                    <section className="checkout-section">
-
-                        <h2>
-                            Delivery Information
-                        </h2>
-
-
-                        <div className="form-group">
-
-                            <label>
-                                Full Name
-                            </label>
-
-                            <input
-                                type="text"
-                                name="full_name"
-                                value={
-                                    formData.full_name
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                autoComplete="name"
-                                required
-                            />
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label>
-                                Phone
-                            </label>
-
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={
-                                    formData.phone
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                autoComplete="tel"
-                                placeholder="080XXXXXXXX"
-                                required
-                            />
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label>
-                                Email
-                            </label>
-
-                            <input
-                                type="email"
-                                name="email"
-                                value={
-                                    formData.email
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                autoComplete="email"
-                                required
-                            />
-
-                        </div>
-
-
-                        <div className="form-group">
-
-                            <label>
-                                Delivery Address
-                            </label>
-
-                            <textarea
-                                name="address"
-                                value={
-                                    formData.address
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                                autoComplete="street-address"
-                                placeholder="Enter your delivery address"
-                                required
-                            />
-
-                        </div>
-
-
-                        <div className="checkout-row">
-
-
-                            <div className="form-group">
-
-                                <label>
-                                    State
-                                </label>
-
-                                <input
-                                    type="text"
-                                    name="state"
-                                    value={
-                                        formData.state
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
-                                    autoComplete="address-level1"
-                                    placeholder="FCT"
-                                    required
-                                />
-
-                            </div>
-
-
-                            <div className="form-group">
-
-                                <label>
-                                    City
-                                </label>
-
-                                <input
-                                    type="text"
-                                    name="city"
-                                    value={
-                                        formData.city
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
-                                    autoComplete="address-level2"
-                                    placeholder="Abuja"
-                                    required
-                                />
-
-                            </div>
-
-
-                            <div className="form-group">
-
-                                <label>
-                                    Postal Code
-                                </label>
-
-                                <input
-                                    type="text"
-                                    name="postal_code"
-                                    value={
-                                        formData.postal_code
-                                    }
-                                    onChange={
-                                        handleChange
-                                    }
-                                    autoComplete="postal-code"
-                                    placeholder="Optional"
-                                />
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    {/* ======================================================
-                        DELIVERY METHOD
-                    ====================================================== */}
-
-                    <section className="checkout-section">
-
-                        <h2>
-                            Delivery Method
-                        </h2>
-
-
-                        <label className="checkout-option">
-
-                            <input
-                                type="radio"
-                                name="delivery"
-                                value="standard"
-                                checked={
-                                    deliveryMethod ===
-                                    "standard"
-                                }
-                                onChange={(e) =>
-                                    setDeliveryMethod(
-                                        e.target.value
-                                    )
-                                }
-                            />
-
-
-                            <span>
-
-                                <strong>
-                                    Standard Delivery
-                                </strong>
-
-                                <br />
-
-                                ₦5,000
-
-                            </span>
-
-                        </label>
-
-
-                        <label className="checkout-option">
-
-                            <input
-                                type="radio"
-                                name="delivery"
-                                value="express"
-                                checked={
-                                    deliveryMethod ===
-                                    "express"
-                                }
-                                onChange={(e) =>
-                                    setDeliveryMethod(
-                                        e.target.value
-                                    )
-                                }
-                            />
-
-
-                            <span>
-
-                                <strong>
-                                    Express Delivery
-                                </strong>
-
-                                <br />
-
-                                ₦10,000
-
-                            </span>
-
-                        </label>
-
-                    </section>
-
-
-                    {/* ======================================================
-                        PAYMENT METHOD
-                    ====================================================== */}
-
-                    <section className="checkout-section">
-
-                        <h2>
-                            Payment Method
-                        </h2>
-
-
-                        <label className="checkout-option">
-
-                            <input
-                                type="radio"
-                                name="payment"
-                                value="pay_on_delivery"
-                                checked={
-                                    paymentMethod ===
-                                    "pay_on_delivery"
-                                }
-                                onChange={(e) =>
-                                    setPaymentMethod(
-                                        e.target.value
-                                    )
-                                }
-                            />
-
-
-                            <span>
-
-                                <strong>
-                                    Pay on Delivery
-                                </strong>
-
-                                <br />
-
-                                Pay when your order arrives.
-
-                            </span>
-
-                        </label>
-
-
-                        <label className="checkout-option">
-
-                            <input
-                                type="radio"
-                                name="payment"
-                                value="online_payment"
-                                checked={
-                                    paymentMethod ===
-                                    "online_payment"
-                                }
-                                onChange={(e) =>
-                                    setPaymentMethod(
-                                        e.target.value
-                                    )
-                                }
-                            />
-
-
-                            <span>
-
-                                <strong>
-                                    Online Payment
-                                </strong>
-
-                                <br />
-
-                                Pay securely online.
-
-                            </span>
-
-                        </label>
-
-                    </section>
-
-
-                    {/* ======================================================
-                        ORDER SUMMARY
-                    ====================================================== */}
-
-                    {cart && (
-
-                        <section className="checkout-summary">
-
-                            <h2>
-                                Order Summary
+                <header className="checkout-header-editorial">
+                    <span className="checkout-eyebrow">HAUTE COUTURE CONCIERGE</span>
+                    <h1 className="checkout-title">Boutique Checkout</h1>
+                </header>
+
+                <form onSubmit={handleSubmit} className="checkout-grid">
+                    {/* Left Steps */}
+                    <div className="checkout-form-container">
+                        {/* Step 1: Delivery Address */}
+                        <section className="checkout-section-card">
+                            <h2 className="checkout-section-title">
+                                <span className="section-badge-step">1</span>
+                                Delivery Dossier &amp; Destination
                             </h2>
 
+                            <div className="form-row-duo">
+                                <div className="form-group-editorial">
+                                    <label htmlFor="full_name">Client Full Name *</label>
+                                    <input
+                                        id="full_name"
+                                        type="text"
+                                        name="full_name"
+                                        placeholder="e.g. David Alabi"
+                                        value={formData.full_name}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-                            <p>
+                                <div className="form-group-editorial">
+                                    <label htmlFor="phone">Direct Telephone *</label>
+                                    <input
+                                        id="phone"
+                                        type="tel"
+                                        name="phone"
+                                        placeholder="e.g. 08012345678"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                                Subtotal:
+                            <div className="form-group-editorial">
+                                <label htmlFor="email">Email for Order Dispatch *</label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    placeholder="client@example.com"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
 
-                                <strong>
-                                    {" "}
-                                    {formatPrice(
-                                        cart.subtotal
-                                    )}
-                                </strong>
+                            <div className="form-group-editorial">
+                                <label htmlFor="address">Full Delivery Street Address *</label>
+                                <textarea
+                                    id="address"
+                                    name="address"
+                                    rows="3"
+                                    placeholder="Street, Estate name, Building number, Suite / Penthouse"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
 
-                            </p>
+                            <div className="form-row-trio">
+                                <div className="form-group-editorial">
+                                    <label htmlFor="state">State *</label>
+                                    <input
+                                        id="state"
+                                        type="text"
+                                        name="state"
+                                        placeholder="e.g. Lagos / FCT"
+                                        value={formData.state}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
+                                <div className="form-group-editorial">
+                                    <label htmlFor="city">City / District *</label>
+                                    <input
+                                        id="city"
+                                        type="text"
+                                        name="city"
+                                        placeholder="e.g. Maitama / Victoria Island"
+                                        value={formData.city}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-                            <p>
-
-                                Delivery:
-
-                                <strong>
-                                    {" "}
-                                    {formatPrice(
-                                        deliveryPrices[
-                                            deliveryMethod
-                                        ]
-                                    )}
-                                </strong>
-
-                            </p>
-
-
-                            <hr />
-
-
-                            <h3>
-
-                                Total:
-
-                                {" "}
-
-                                {formatPrice(
-                                    Number(
-                                        cart.subtotal
-                                    ) +
-                                    deliveryPrices[
-                                        deliveryMethod
-                                    ]
-                                )}
-
-                            </h3>
-
+                                <div className="form-group-editorial">
+                                    <label htmlFor="postal_code">Postal Code</label>
+                                    <input
+                                        id="postal_code"
+                                        type="text"
+                                        name="postal_code"
+                                        placeholder="Optional"
+                                        value={formData.postal_code}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
                         </section>
 
-                    )}
+                        {/* Step 2: Delivery Method */}
+                        <section className="checkout-section-card">
+                            <h2 className="checkout-section-title">
+                                <span className="section-badge-step">2</span>
+                                Select Delivery Speed &amp; Courier
+                            </h2>
 
+                            <div className="options-card-group">
+                                <div
+                                    className={`option-selector-card ${deliveryMethod === "standard" ? "active" : ""}`}
+                                    onClick={() => setDeliveryMethod("standard")}
+                                >
+                                    <div className="option-radio-indicator" />
+                                    <div className="option-text-block">
+                                        <span className="option-title">Standard White-Glove</span>
+                                        <span className="option-desc">Estimated 2–4 business days delivery.</span>
+                                        <span className="option-price-tag">₦5,000</span>
+                                    </div>
+                                </div>
 
-                    {/* ======================================================
-                        BUTTON
-                    ====================================================== */}
+                                <div
+                                    className={`option-selector-card ${deliveryMethod === "express" ? "active" : ""}`}
+                                    onClick={() => setDeliveryMethod("express")}
+                                >
+                                    <div className="option-radio-indicator" />
+                                    <div className="option-text-block">
+                                        <span className="option-title">Express Priority Courier</span>
+                                        <span className="option-desc">Next-day direct VIP dispatch.</span>
+                                        <span className="option-price-tag">₦10,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
 
-                    <button
-                        type="submit"
-                        className="checkout-button"
-                    >
-                        Continue to Payment
-                    </button>
+                        {/* Step 3: Payment Method */}
+                        <section className="checkout-section-card">
+                            <h2 className="checkout-section-title">
+                                <span className="section-badge-step">3</span>
+                                Payment Preference
+                            </h2>
 
+                            <div className="options-card-group">
+                                <div
+                                    className={`option-selector-card ${paymentMethod === "pay_on_delivery" ? "active" : ""}`}
+                                    onClick={() => setPaymentMethod("pay_on_delivery")}
+                                >
+                                    <div className="option-radio-indicator" />
+                                    <div className="option-text-block">
+                                        <span className="option-title">Pay on Delivery</span>
+                                        <span className="option-desc">Settle via POS / Transfer upon concierge arrival.</span>
+                                    </div>
+                                </div>
+
+                                <div
+                                    className={`option-selector-card ${paymentMethod === "online_payment" ? "active" : ""}`}
+                                    onClick={() => setPaymentMethod("online_payment")}
+                                >
+                                    <div className="option-radio-indicator" />
+                                    <div className="option-text-block">
+                                        <span className="option-title">Instant Online Payment</span>
+                                        <span className="option-desc">Secure debit / credit card or instant bank transfer.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Right Summary Sidebar */}
+                    <aside className="checkout-summary-card">
+                        <h2 className="summary-heading">Order Review</h2>
+
+                        {/* Items Preview */}
+                        <div className="checkout-items-preview">
+                            {cart?.items?.map((item) => (
+                                <div className="preview-item-row" key={item.id || item.product_id}>
+                                    {item.image ? (
+                                        <img
+                                            src={getImageUrl("products", item.image)}
+                                            alt={item.name}
+                                            className="preview-item-img"
+                                        />
+                                    ) : (
+                                        <div className="preview-item-img" style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gold-primary)", fontSize: "0.8rem", fontWeight: 700 }}>
+                                            DG
+                                        </div>
+                                    )}
+                                    <div className="preview-item-details">
+                                        <div className="preview-item-name">{item.name}</div>
+                                        <div className="preview-item-qty">Qty: {item.quantity} × {formatPrice(item.price)}</div>
+                                    </div>
+                                    <div className="preview-item-price">
+                                        {formatPrice(Number(item.price || 0) * Number(item.quantity || 1))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="summary-row">
+                            <span>Subtotal</span>
+                            <strong>{formatPrice(calculateSubtotal())}</strong>
+                        </div>
+
+                        <div className="summary-row">
+                            <span>Courier Dispatch</span>
+                            <strong>{formatPrice(getDeliveryFee())}</strong>
+                        </div>
+
+                        <div className="summary-row total-row">
+                            <span>Total Due</span>
+                            <span className="total-amount">{formatPrice(getTotal())}</span>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="checkout-submit-btn"
+                            disabled={submitting}
+                        >
+                            {submitting ? "PLACING ATELIER ORDER..." : `CONFIRM & PLACE ORDER (${formatPrice(getTotal())})`}
+                        </button>
+
+                        <div className="security-seal-row">
+                            <span className="security-seal-icon">🔒</span>
+                            <span>256-Bit Encrypted Secure Checkout</span>
+                        </div>
+                    </aside>
                 </form>
-
             </main>
 
-
             <Footer />
-
         </>
-
     );
-
 }
-
 
 export default Checkout;

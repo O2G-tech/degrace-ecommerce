@@ -1,1004 +1,340 @@
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
 import {
     getCart,
     updateCartItem,
     removeFromCart
 } from "../services/cartService";
 import { getImageUrl } from "../services/api";
+import "./styling/Cart.css";
 
 function Cart() {
-
     const navigate = useNavigate();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cart State
-    |--------------------------------------------------------------------------
-    */
-
     const [items, setItems] = useState([]);
-
     const [subtotal, setSubtotal] = useState(0);
-
-    const [delivery, setDelivery] = useState(0);
-
+    const [delivery, setDelivery] = useState(5000);
     const [total, setTotal] = useState(0);
-
     const [loading, setLoading] = useState(true);
-
     const [error, setError] = useState("");
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Load Cart
-    |--------------------------------------------------------------------------
-    */
+    const [updatingId, setUpdatingId] = useState(null);
 
     const loadCart = async () => {
-
         try {
-
             setLoading(true);
             setError("");
 
             const result = await getCart();
 
-            console.log(
-                "========== CART RESPONSE =========="
-            );
-
-            console.log(result);
-
-            console.log(
-                "CART ITEMS:",
-                result?.data?.items
-            );
-
-            console.log(
-                "==================================="
-            );
-
-
             if (!result || !result.success) {
-
-                setError(
-                    result?.message ||
-                    "Failed to load cart"
-                );
-
+                setError(result?.message || "Failed to load boutique shopping bag.");
                 return;
             }
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Get cart items
-            |--------------------------------------------------------------------------
-            */
-
-            const cartItems =
-                result.data?.items || [];
-
-
+            const cartItems = result.data?.items || [];
             setItems(cartItems);
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Calculate subtotal
-            |--------------------------------------------------------------------------
-            */
-
             let calculatedSubtotal = 0;
-
-
             cartItems.forEach((item) => {
-
-                const price =
-                    Number(item.price || 0);
-
-                const quantity =
-                    Number(item.quantity || 0);
-
-                calculatedSubtotal +=
-                    price * quantity;
-
+                const price = Number(item.price || 0);
+                const quantity = Number(item.quantity || 0);
+                calculatedSubtotal += price * quantity;
             });
 
+            const backendSubtotal = Number(result.data?.subtotal);
+            const finalSubtotal = !isNaN(backendSubtotal) && backendSubtotal > 0
+                ? backendSubtotal
+                : calculatedSubtotal;
+            setSubtotal(finalSubtotal);
 
-            /*
-            |--------------------------------------------------------------------------
-            | Use backend subtotal if available
-            |--------------------------------------------------------------------------
-            */
+            const deliveryFee = Number(result.data?.delivery ?? result.data?.delivery_fee ?? 5000);
+            const finalDelivery = cartItems.length > 0 ? (isNaN(deliveryFee) ? 5000 : deliveryFee) : 0;
+            setDelivery(finalDelivery);
 
-            const backendSubtotal =
-                Number(
-                    result.data?.subtotal
-                );
-
-
-            if (
-                !isNaN(backendSubtotal) &&
-                backendSubtotal > 0
-            ) {
-
-                setSubtotal(
-                    backendSubtotal
-                );
-
-            } else {
-
-                setSubtotal(
-                    calculatedSubtotal
-                );
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Delivery
-            |--------------------------------------------------------------------------
-            */
-
-            const deliveryFee =
-                Number(
-                    result.data?.delivery ??
-                    result.data?.delivery_fee ??
-                    5000
-                );
-
-
-            setDelivery(
-                isNaN(deliveryFee)
-                    ? 5000
-                    : deliveryFee
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Total
-            |--------------------------------------------------------------------------
-            */
-
-            const backendTotal =
-                Number(
-                    result.data?.total
-                );
-
-
-            if (
-                !isNaN(backendTotal) &&
-                backendTotal > 0
-            ) {
-
-                setTotal(
-                    backendTotal
-                );
-
-            } else {
-
-                const finalSubtotal =
-                    !isNaN(backendSubtotal) &&
-                    backendSubtotal > 0
-                        ? backendSubtotal
-                        : calculatedSubtotal;
-
-
-                setTotal(
-                    finalSubtotal +
-                    (
-                        isNaN(deliveryFee)
-                            ? 5000
-                            : deliveryFee
-                    )
-                );
-
-            }
+            const backendTotal = Number(result.data?.total);
+            const finalTotal = !isNaN(backendTotal) && backendTotal > 0
+                ? backendTotal
+                : finalSubtotal + finalDelivery;
+            setTotal(finalTotal);
 
         } catch (error) {
-
-            console.error(
-                "CART ERROR:",
-                error
-            );
-
-            console.error(
-                "SERVER RESPONSE:",
-                error.response?.data
-            );
-
-
-            if (
-                error.response?.status === 401
-            ) {
-
-                setError(
-                    "Please login to view your cart."
-                );
-
-                return;
+            console.error("CART LOAD ERROR:", error);
+            if (error.response?.status === 401) {
+                setError("Please sign in to your client account to view your shopping bag.");
+            } else {
+                setError(error.response?.data?.message || "Unable to connect to boutique server.");
             }
-
-
-            setError(
-                error.response?.data?.message ||
-                "Failed to load cart. Please try again."
-            );
-
         } finally {
-
             setLoading(false);
-
         }
-
     };
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Load cart when page opens
-    |--------------------------------------------------------------------------
-    */
 
     useEffect(() => {
-
         loadCart();
-
     }, []);
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Get Cart Item ID
-    |--------------------------------------------------------------------------
-    |
-    | Your cart API may return either:
-    |
-    | cart_item_id
-    | OR
-    | id
-    |
-    | This function handles both.
-    |--------------------------------------------------------------------------
-    */
-
     const getCartItemId = (item) => {
-
-        return (
-            item.cart_item_id ??
-            item.id ??
-            null
-        );
-
+        return item.cart_item_id ?? item.id ?? null;
     };
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Increase Quantity
-    |--------------------------------------------------------------------------
-    */
 
     const increaseQuantity = async (item) => {
-
-        const cartItemId =
-            getCartItemId(item);
-
-
-        if (!cartItemId) {
-
-            alert(
-                "Cart item ID is missing."
-            );
-
-            console.error(
-                "INVALID CART ITEM:",
-                item
-            );
-
-            return;
-        }
-
+        const cartItemId = getCartItemId(item);
+        if (!cartItemId) return;
 
         try {
-
-            const result =
-                await updateCartItem(
-                    cartItemId,
-                    Number(item.quantity) + 1
-                );
-
-
-            console.log(
-                "UPDATE QUANTITY RESPONSE:",
-                result
-            );
-
-
+            setUpdatingId(cartItemId);
+            const result = await updateCartItem(cartItemId, Number(item.quantity) + 1);
             if (!result.success) {
-
-                alert(
-                    result.message ||
-                    "Failed to update quantity"
-                );
-
+                alert(result.message || "Failed to update quantity");
                 return;
             }
-
-
             await loadCart();
-
         } catch (error) {
-
-            console.error(
-                "INCREASE QUANTITY ERROR:",
-                error
-            );
-
-            console.error(
-                "SERVER RESPONSE:",
-                error.response?.data
-            );
-
-
-            alert(
-                error.response?.data?.message ||
-                "Failed to update quantity"
-            );
-
+            console.error("INCREASE QUANTITY ERROR:", error);
+            alert(error.response?.data?.message || "Failed to update piece quantity.");
+        } finally {
+            setUpdatingId(null);
         }
-
     };
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Decrease Quantity
-    |--------------------------------------------------------------------------
-    */
 
     const decreaseQuantity = async (item) => {
+        const quantity = Number(item.quantity);
+        if (quantity <= 1) return;
 
-        const quantity =
-            Number(item.quantity);
-
-
-        if (quantity <= 1) {
-
-            return;
-
-        }
-
-
-        const cartItemId =
-            getCartItemId(item);
-
-
-        if (!cartItemId) {
-
-            alert(
-                "Cart item ID is missing."
-            );
-
-            console.error(
-                "INVALID CART ITEM:",
-                item
-            );
-
-            return;
-        }
-
+        const cartItemId = getCartItemId(item);
+        if (!cartItemId) return;
 
         try {
-
-            const result =
-                await updateCartItem(
-                    cartItemId,
-                    quantity - 1
-                );
-
-
-            console.log(
-                "DECREASE RESPONSE:",
-                result
-            );
-
-
+            setUpdatingId(cartItemId);
+            const result = await updateCartItem(cartItemId, quantity - 1);
             if (!result.success) {
-
-                alert(
-                    result.message ||
-                    "Failed to update quantity"
-                );
-
+                alert(result.message || "Failed to update quantity");
                 return;
             }
-
-
             await loadCart();
-
         } catch (error) {
-
-            console.error(
-                "DECREASE QUANTITY ERROR:",
-                error
-            );
-
-            console.error(
-                "SERVER RESPONSE:",
-                error.response?.data
-            );
-
-
-            alert(
-                error.response?.data?.message ||
-                "Failed to update quantity"
-            );
-
+            console.error("DECREASE QUANTITY ERROR:", error);
+            alert(error.response?.data?.message || "Failed to update piece quantity.");
+        } finally {
+            setUpdatingId(null);
         }
-
     };
 
+    const handleRemoveItem = async (item) => {
+        const cartItemId = getCartItemId(item);
+        if (!cartItemId) return;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Remove Product
-    |--------------------------------------------------------------------------
-    */
-
-    const handleRemove = async (item) => {
-
-        const cartItemId =
-            getCartItemId(item);
-
-
-        console.log(
-            "========== REMOVE CART ITEM =========="
-        );
-
-        console.log(
-            "Cart Item:",
-            item
-        );
-
-        console.log(
-            "Cart Item ID:",
-            cartItemId
-        );
-
-        console.log(
-            "Product ID:",
-            item.product_id
-        );
-
-        console.log(
-            "======================================="
-        );
-
-
-        if (!cartItemId) {
-
-            alert(
-                "Invalid cart item. Cart item ID is missing."
-            );
-
-            return;
-        }
-
-
-        const confirmed =
-            window.confirm(
-                `Remove ${item.name || "this product"} from your cart?`
-            );
-
-
-        if (!confirmed) {
-
-            return;
-
-        }
-
+        const confirmed = window.confirm(`Remove "${item.name || 'this piece'}" from your shopping bag?`);
+        if (!confirmed) return;
 
         try {
-
-            const result =
-                await removeFromCart(
-                    cartItemId
-                );
-
-
-            console.log(
-                "REMOVE RESPONSE:",
-                result
-            );
-
-
+            setUpdatingId(cartItemId);
+            const result = await removeFromCart(cartItemId);
             if (result.success) {
-
-                /*
-                |--------------------------------------------------------------------------
-                | Remove immediately from screen
-                |--------------------------------------------------------------------------
-                */
-
-                setItems((currentItems) =>
-                    currentItems.filter(
-                        (cartItem) =>
-                            getCartItemId(cartItem) !==
-                            cartItemId
-                    )
-                );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Reload cart totals from backend
-                |--------------------------------------------------------------------------
-                */
-
+                setItems((current) => current.filter((ci) => getCartItemId(ci) !== cartItemId));
                 await loadCart();
-
-
             } else {
-
-                alert(
-                    result.message ||
-                    "Failed to remove product"
-                );
-
+                alert(result.message || "Failed to remove piece.");
             }
-
         } catch (error) {
-
-            console.error(
-                "REMOVE CART ERROR:",
-                error
-            );
-
-            console.error(
-                "STATUS:",
-                error.response?.status
-            );
-
-            console.error(
-                "SERVER RESPONSE:",
-                error.response?.data
-            );
-
-
-            alert(
-                error.response?.data?.message ||
-                "Failed to remove product from cart"
-            );
-
+            console.error("REMOVE CART ERROR:", error);
+            alert(error.response?.data?.message || "Failed to remove piece from shopping bag.");
+        } finally {
+            setUpdatingId(null);
         }
-
     };
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Format Currency
-    |--------------------------------------------------------------------------
-    */
-
-    const formatPrice = (value) => {
-
-        return `₦${Number(
-            value || 0
-        ).toLocaleString()}`;
-
+    const formatPrice = (val) => {
+        return `₦${Number(val || 0).toLocaleString()}`;
     };
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Render
-    |--------------------------------------------------------------------------
-    */
 
     return (
-
         <>
             <Navbar />
 
-
             <main className="cart-page">
+                <header className="cart-header-editorial">
+                    <span className="cart-eyebrow">YOUR ATELIER SELECTION</span>
+                    <h1 className="cart-title">Boutique Shopping Bag</h1>
+                </header>
 
-                <h1>
-                    Shopping Cart
-                </h1>
-
-
-                {/* ==========================================================
-                    LOADING
-                ========================================================== */}
-
+                {/* Loading State */}
                 {loading && (
-
-                    <div className="cart-message">
-
-                        <p>
-                            Loading cart...
-                        </p>
-
+                    <div className="cart-loading-state">
+                        <p>Opening Maison Shopping Bag...</p>
                     </div>
-
                 )}
 
-
-                {/* ==========================================================
-                    ERROR
-                ========================================================== */}
-
+                {/* Error State */}
                 {error && !loading && (
-
-                    <div className="cart-message">
-
-                        <p className="error">
-                            {error}
-                        </p>
-
-
-                        {error
-                            .toLowerCase()
-                            .includes("login") && (
-
+                    <div className="cart-error-state">
+                        <p style={{ color: "#b33939", marginBottom: "1.5rem" }}>{error}</p>
+                        {error.toLowerCase().includes("sign in") || error.toLowerCase().includes("login") ? (
                             <button
                                 type="button"
-                                onClick={() =>
-                                    navigate(
-                                        "/login?redirect=/cart"
-                                    )
-                                }
+                                className="btn-editorial-gold"
+                                onClick={() => navigate("/login?redirect=/cart")}
                             >
-                                Login
+                                Sign In to Client Account
                             </button>
-
+                        ) : (
+                            <button
+                                type="button"
+                                className="btn-editorial-gold"
+                                onClick={loadCart}
+                            >
+                                Retry
+                            </button>
                         )}
-
                     </div>
-
                 )}
 
-
-                {/* ==========================================================
-                    EMPTY CART
-                ========================================================== */}
-
-                {!loading &&
-                    !error &&
-                    items.length === 0 && (
-
-                    <div className="empty-cart">
-
-                        <h2>
-                            Your cart is empty
-                        </h2>
-
-
-                        <p>
-                            You haven't added any
-                            products yet.
-                        </p>
-
-
-                        <Link
-                            to="/products"
-                            className="continue-shopping"
-                        >
-                            Continue Shopping
+                {/* Empty State */}
+                {!loading && !error && items.length === 0 && (
+                    <div className="empty-cart-editorial">
+                        <div className="empty-cart-icon">✧</div>
+                        <h2>Your Shopping Bag is Empty</h2>
+                        <p>Discover our newest curated haute couture, bespoke jewelry, and luxury accessories.</p>
+                        <Link to="/products" className="btn-editorial-gold">
+                            EXPLORE COUTURE ARCHIVE
                         </Link>
-
                     </div>
-
                 )}
 
-
-                {/* ==========================================================
-                    CART
-                ========================================================== */}
-
-                {!loading &&
-                    !error &&
-                    items.length > 0 && (
-
-                    <div className="cart-container">
-
-
-                        {/* ==================================================
-                            PRODUCTS
-                        ================================================== */}
-
-                        <section className="cart-items">
-
+                {/* Cart Active */}
+                {!loading && !error && items.length > 0 && (
+                    <div className="cart-layout-grid">
+                        {/* Cart Items List */}
+                        <section className="cart-items-column">
                             {items.map((item) => {
-
-                                const cartItemId =
-                                    getCartItemId(item);
-
-
-                                const price =
-                                    Number(
-                                        item.price || 0
-                                    );
-
-
-                                const quantity =
-                                    Number(
-                                        item.quantity || 0
-                                    );
-
-
-                                const itemTotal =
-                                    item.item_total !==
-                                    undefined
-                                        ? Number(
-                                            item.item_total
-                                        )
-                                        : price *
-                                          quantity;
-
+                                const cartItemId = getCartItemId(item);
+                                const price = Number(item.price || 0);
+                                const quantity = Number(item.quantity || 0);
+                                const itemTotal = item.item_total !== undefined ? Number(item.item_total) : price * quantity;
+                                const isBusy = updatingId === cartItemId;
+                                const imageUrl = item.image ? getImageUrl("products", item.image) : "";
 
                                 return (
-
-                                    <div
-                                        className="cart-item"
-                                        key={
-                                            cartItemId ||
-                                            item.product_id
-                                        }
-                                    >
-
-
-                                        {/* ==================================
-                                            IMAGE
-                                        ================================== */}
-
-                                        <div className="cart-item-image">
-
-                                            {item.image ? (
-
+                                    <article className="cart-item-card" key={cartItemId || item.product_id}>
+                                        <div className="cart-thumbnail-wrapper">
+                                            {imageUrl ? (
                                                 <img
-                                                    src={getImageUrl("products", item.image)}
-                                                    alt={
-                                                        item.name
-                                                    }
+                                                    src={imageUrl}
+                                                    alt={item.name}
+                                                    className="cart-thumbnail-img"
                                                 />
-
                                             ) : (
-
-                                                <div className="no-image">
-
-                                                    No Image
-
+                                                <div className="cart-no-img-monogram">
+                                                    <span>DG</span>
                                                 </div>
-
                                             )}
-
                                         </div>
 
-
-                                        {/* ==================================
-                                            DETAILS
-                                        ================================== */}
-
-                                        <div className="cart-item-details">
-
-                                            <h3>
-                                                {item.name}
-                                            </h3>
-
-
-                                            <p>
-                                                {formatPrice(
-                                                    item.price
-                                                )}
-                                            </p>
-
-
-                                            {item.stock !==
-                                                undefined && (
-
-                                                <p>
-                                                    Stock:{" "}
-                                                    {item.stock}
-                                                </p>
-
-                                            )}
-
-
-                                            {/* ==============================
-                                                QUANTITY
-                                            ============================== */}
-
-                                            <div className="quantity-controls">
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        decreaseQuantity(
-                                                            item
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        quantity <=
-                                                        1
-                                                    }
-                                                >
-                                                    −
-                                                </button>
-
-
-                                                <span>
-                                                    {quantity}
-                                                </span>
-
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        increaseQuantity(
-                                                            item
-                                                        )
-                                                    }
-                                                >
-                                                    +
-                                                </button>
-
+                                        <div className="cart-item-info">
+                                            <span className="cart-item-category">DE-GRACE EXCLUSIVE</span>
+                                            <h2 className="cart-item-title">{item.name}</h2>
+                                            <div className="cart-item-unit-price">
+                                                Unit: {formatPrice(price)}
                                             </div>
 
+                                            <div className="cart-item-actions">
+                                                <div className="editorial-qty-control">
+                                                    <button
+                                                        type="button"
+                                                        className="qty-btn"
+                                                        onClick={() => decreaseQuantity(item)}
+                                                        disabled={quantity <= 1 || isBusy}
+                                                        aria-label="Decrease quantity"
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <span className="qty-display">{quantity}</span>
+                                                    <button
+                                                        type="button"
+                                                        className="qty-btn"
+                                                        onClick={() => increaseQuantity(item)}
+                                                        disabled={isBusy}
+                                                        aria-label="Increase quantity"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
 
-                                            {/* ==============================
-                                                ITEM TOTAL
-                                            ============================== */}
-
-                                            <strong>
-
-                                                Item Total:{" "}
-
-                                                {formatPrice(
-                                                    itemTotal
-                                                )}
-
-                                            </strong>
-
-
-                                            <br />
-
-
-                                            {/* ==============================
-                                                REMOVE
-                                            ============================== */}
-
-                                            <button
-                                                type="button"
-                                                className="remove-button"
-                                                onClick={() =>
-                                                    handleRemove(
-                                                        item
-                                                    )
-                                                }
-                                            >
-                                                Remove
-                                            </button>
-
+                                                <button
+                                                    type="button"
+                                                    className="cart-remove-link"
+                                                    onClick={() => handleRemoveItem(item)}
+                                                    disabled={isBusy}
+                                                >
+                                                    Remove Piece
+                                                </button>
+                                            </div>
                                         </div>
 
-                                    </div>
-
+                                        <div className="cart-item-total-col">
+                                            <span className="cart-item-total-label">Subtotal</span>
+                                            <span className="cart-item-total-val">{formatPrice(itemTotal)}</span>
+                                        </div>
+                                    </article>
                                 );
-
                             })}
-
                         </section>
 
+                        {/* Order Summary Sidebar */}
+                        <aside className="cart-summary-card">
+                            <h2 className="summary-heading">Order Summary</h2>
 
-                        {/* ==================================================
-                            ORDER SUMMARY
-                        ================================================== */}
-
-                        <aside className="cart-summary">
-
-                            <h2>
-                                Order Summary
-                            </h2>
-
-
-                            <div>
-
-                                <span>
-                                    Subtotal
-                                </span>
-
-                                <strong>
-                                    {formatPrice(
-                                        subtotal
-                                    )}
-                                </strong>
-
+                            <div className="summary-row">
+                                <span>Atelier Subtotal</span>
+                                <strong>{formatPrice(subtotal)}</strong>
                             </div>
 
-
-                            <div>
-
-                                <span>
-                                    Delivery
-                                </span>
-
-                                <strong>
-                                    {formatPrice(
-                                        delivery
-                                    )}
-                                </strong>
-
+                            <div className="summary-row">
+                                <span>White-Glove Dispatch</span>
+                                <strong>{delivery > 0 ? formatPrice(delivery) : "COMPLIMENTARY"}</strong>
                             </div>
 
-
-                            <hr />
-
-
-                            <div className="cart-total">
-
-                                <span>
-                                    Total
-                                </span>
-
-                                <strong>
-                                    {formatPrice(
-                                        total
-                                    )}
-                                </strong>
-
+                            <div className="summary-row total-row">
+                                <span>Total Investment</span>
+                                <span className="total-amount">{formatPrice(total)}</span>
                             </div>
-
 
                             <button
                                 type="button"
-                                className="checkout-btn"
-                                onClick={() =>
-                                    navigate(
-                                        "/checkout"
-                                    )
-                                }
+                                className="btn-proceed-checkout"
+                                onClick={() => navigate("/checkout")}
                             >
-                                Proceed to Checkout
+                                PROCEED TO CHECKOUT →
                             </button>
 
-
-                            <Link
-                                to="/products"
-                                className="continue-shopping"
-                            >
-                                Continue Shopping
+                            <Link to="/products" className="continue-shopping-link">
+                                ← Continue Perusing Collections
                             </Link>
 
+                            <div className="luxury-perks-list">
+                                <div className="perk-item">
+                                    <span className="perk-icon">✦</span>
+                                    <span>Complimentary Concierge Packaging</span>
+                                </div>
+                                <div className="perk-item">
+                                    <span className="perk-icon">✦</span>
+                                    <span>Certificate of Atelier Authenticity</span>
+                                </div>
+                                <div className="perk-item">
+                                    <span className="perk-icon">✦</span>
+                                    <span>Discreet Insured Express Delivery</span>
+                                </div>
+                            </div>
                         </aside>
-
                     </div>
-
                 )}
-
             </main>
 
-
             <Footer />
-
         </>
-
     );
-
 }
-
 
 export default Cart;

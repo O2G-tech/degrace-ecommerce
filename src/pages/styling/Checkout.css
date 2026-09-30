@@ -1,0 +1,355 @@
+/* ==========================================================================
+   DE-GRACE CLASSIC BOUTIQUE — HAUTE COUTURE CHECKOUT EDITORIAL STYLING
+   ========================================================================== */
+
+.checkout-page {
+    min-height: 85vh;
+    background-color: var(--bg-primary, #fcfbfa);
+    padding: 3rem 1.5rem 6rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.checkout-header-editorial {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+    position: relative;
+}
+
+.checkout-header-editorial::after {
+    content: "CONCIERGE";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-primary, #fcfbfa);
+    padding: 0 1rem;
+    font-family: var(--font-display, "Cinzel", serif);
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: var(--gold-primary, #c5a059);
+}
+
+.checkout-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-primary, #c5a059);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.checkout-title {
+    font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+    font-size: 2.8rem;
+    font-weight: 400;
+    color: var(--ink-primary, #0f0f11);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 3.5rem;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .checkout-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+}
+
+/* Left Form Sections */
+.checkout-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.checkout-section-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 15, 17, 0.08);
+    border-radius: 8px;
+    padding: 2.2rem 2.5rem;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.02);
+    position: relative;
+}
+
+.section-badge-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--gold-gradient, linear-gradient(135deg, #dfc285, #c5a059));
+    color: #0b0b0d;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-right: 0.75rem;
+}
+
+.checkout-section-title {
+    font-family: var(--font-serif, "Playfair Display", Georgia, serif);
+    font-size: 1.4rem;
+    color: var(--ink-primary, #0f0f11);
+    margin-bottom: 1.8rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(15, 15, 17, 0.06);
+    padding-bottom: 0.75rem;
+}
+
+/* Form Fields */
+.form-row-duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-row-trio {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-group-editorial {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-group-editorial label {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ink-secondary, #2b2b30);
+}
+
+.form-group-editorial input,
+.form-group-editorial textarea,
+.form-group-editorial select {
+    width: 100%;
+    padding: 0.95rem 1.1rem;
+    border: 1px solid rgba(15, 15, 17, 0.14);
+    border-radius: 4px;
+    background: #faf9f6;
+    font-size: 0.95rem;
+    color: var(--ink-primary, #0f0f11);
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.form-group-editorial input:focus,
+.form-group-editorial textarea:focus,
+.form-group-editorial select:focus {
+    outline: none;
+    border-color: var(--gold-primary, #c5a059);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+}
+
+/* Luxury Selector Cards (Delivery & Payment) */
+.options-card-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+    .options-card-group,
+    .form-row-duo,
+    .form-row-trio {
+        grid-template-columns: 1fr;
+    }
+}
+
+.option-selector-card {
+    border: 1.5px solid rgba(15, 15, 17, 0.1);
+    border-radius: 6px;
+    padding: 1.4rem;
+    cursor: pointer;
+    background: #ffffff;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+}
+
+.option-selector-card:hover {
+    border-color: rgba(197, 160, 89, 0.6);
+    background: #fdfbf7;
+}
+
+.option-selector-card.active {
+    border-color: var(--gold-primary, #c5a059);
+    background: #faf6ee;
+    box-shadow: 0 6px 20px rgba(197, 160, 89, 0.15);
+}
+
+.option-radio-indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(15, 15, 17, 0.25);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.option-selector-card.active .option-radio-indicator {
+    border-color: var(--gold-primary, #c5a059);
+}
+
+.option-selector-card.active .option-radio-indicator::after {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gold-primary, #c5a059);
+}
+
+.option-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.option-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink-primary, #0f0f11);
+}
+
+.option-desc {
+    font-size: 0.8rem;
+    color: var(--ink-muted, #6e6e76);
+}
+
+.option-price-tag {
+    margin-top: 0.4rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--gold-dark, #9e7934);
+}
+
+/* Right Summary Sidebar */
+.checkout-summary-card {
+    background: #ffffff;
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    border-radius: 8px;
+    padding: 2.2rem;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 100px;
+}
+
+.checkout-items-preview {
+    max-height: 260px;
+    overflow-y: auto;
+    margin-bottom: 1.5rem;
+    padding-right: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.preview-item-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(15, 15, 17, 0.05);
+}
+
+.preview-item-img {
+    width: 50px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 3px;
+    background: #f7f5f2;
+    flex-shrink: 0;
+}
+
+.preview-item-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.preview-item-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-primary, #0f0f11);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.preview-item-qty {
+    font-size: 0.75rem;
+    color: var(--ink-muted, #6e6e76);
+}
+
+.preview-item-price {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--ink-primary, #0f0f11);
+}
+
+.checkout-submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #1b1b20 0%, #0b0b0d 100%);
+    color: #f2deb4;
+    border: 1px solid var(--gold-primary, #c5a059);
+    padding: 1.2rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+}
+
+.checkout-submit-btn:hover:not(:disabled) {
+    background: var(--gold-gradient, linear-gradient(135deg, #f2deb4 0%, #c5a059 50%, #9e7934 100%));
+    color: #0b0b0d;
+    box-shadow: 0 14px 34px rgba(197, 160, 89, 0.4);
+    transform: translateY(-2px);
+}
+
+.checkout-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.security-seal-row {
+    margin-top: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+    color: var(--ink-muted, #6e6e76);
+}
+
+.security-seal-icon {
+    color: #27ae60;
+    font-size: 0.9rem;
+}
