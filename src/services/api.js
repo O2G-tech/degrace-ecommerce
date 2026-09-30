@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost/backend";
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://degrace-backend.onrender.com";
 export const UPLOADS_URL = `${BACKEND_URL}/uploads`;
 
 export const getImageUrl = (folder, image) => {

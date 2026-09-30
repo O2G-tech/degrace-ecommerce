@@ -15,7 +15,7 @@ namespace DeGraceAdmin.Services
 
         private readonly HttpClient _client;
         private readonly CookieContainer _cookieContainer;
-        private string _baseUrl = "http://localhost/backend";
+        private string _baseUrl = "https://degrace-backend.onrender.com";
         private string? _token;
 
         public User? CurrentUser { get; private set; }
