@@ -15,6 +15,12 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((config) => {
+    const token = localStorage.getItem("degrace_token") || localStorage.getItem("token") || localStorage.getItem("session_id");
+    if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+        config.headers["X-Session-ID"] = token;
+    }
+
     if (config.data instanceof FormData) {
         delete config.headers["Content-Type"];
         delete config.headers["content-type"];

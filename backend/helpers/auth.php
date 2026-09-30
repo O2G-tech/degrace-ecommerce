@@ -1,24 +1,39 @@
 <?php
+if (!ob_get_level()) {
+    ob_start();
+}
 
+// Session initialization with Bearer token & Cross-Site support
 if (session_status() === PHP_SESSION_NONE) {
     $bearerToken = null;
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    
+
     if (!$authHeader && function_exists('getallheaders')) {
         $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? $headers['AUTHORIZATION'] ?? '';
     }
 
     if ($authHeader && preg_match('/Bearer\s+(\S+)/i', $authHeader, $matches)) {
-        $bearerToken = $matches[1];
+        $bearerToken = trim($matches[1]);
     } elseif (isset($_SERVER['HTTP_X_SESSION_ID'])) {
         $bearerToken = trim($_SERVER['HTTP_X_SESSION_ID']);
     }
 
-    if ($bearerToken && !empty($bearerToken) && !isset($_COOKIE[session_name()])) {
+    if ($bearerToken && !empty($bearerToken) && $bearerToken !== "null" && $bearerToken !== "undefined") {
         if (preg_match('/^[-,a-zA-Z0-9]{1,128}$/', $bearerToken)) {
             session_id($bearerToken);
         }
+    }
+
+    // Set secure cross-site cookie attributes
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params([
+            'lifetime' => 86400 * 30,
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'None'
+        ]);
     }
 
     session_start();
@@ -34,7 +49,7 @@ function requireLogin()
         http_response_code(401);
         echo json_encode([
             "success" => false,
-            "message" => "Authentication required. Please log in."
+            "message" => "Please sign in to your client account to continue."
         ]);
         exit;
     }
@@ -44,7 +59,6 @@ function requireLogin()
 
 /**
  * Require administrator privileges.
- * Returns user_id if user has role 'admin', otherwise terminates with 401 or 403.
  */
 function requireAdmin()
 {

@@ -92,18 +92,23 @@ try {
         );
     }
 
-    session_regenerate_id(true);
-
     $_SESSION["user_id"] = $user["id"];
-
     $_SESSION["role"] = $user["role"];
+    $_SESSION["user_name"] = $user["name"];
+    $_SESSION["email"] = $user["email"];
+
+    $token = session_id();
 
     unset($user["password"]);
 
     response(
         true,
         "Login successful",
-        $user
+        [
+            "user" => $user,
+            "token" => $token,
+            "session_id" => $token
+        ]
     );
 
 } catch (PDOException $e) {

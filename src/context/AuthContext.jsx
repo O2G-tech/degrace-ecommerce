@@ -59,30 +59,36 @@ export function AuthProvider({ children }) {
     };
 
 
-    const loginUser = (userData) => {
+    const loginUser = (authData) => {
+        let actualUser = authData;
+        let token = authData?.token || authData?.session_id;
 
-        setUser(userData);
+        if (authData && authData.user) {
+            actualUser = authData.user;
+        }
+
+        if (token) {
+            localStorage.setItem("degrace_token", token);
+        }
+
+        setUser(actualUser);
         localStorage.setItem(AUTH_SESSION_KEY, "true");
+        if (actualUser) {
+            localStorage.setItem("degrace_user", JSON.stringify(actualUser));
+        }
     };
 
-
     const logout = async () => {
-
         try {
-
             await logoutUser();
-
         } catch (error) {
-
-            console.error(
-                "Logout error:",
-                error
-            );
-
+            console.error("Logout error:", error);
         } finally {
-
             setUser(null);
             localStorage.removeItem(AUTH_SESSION_KEY);
+            localStorage.removeItem("degrace_token");
+            localStorage.removeItem("token");
+            localStorage.removeItem("degrace_user");
         }
     };
 

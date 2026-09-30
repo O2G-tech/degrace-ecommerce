@@ -196,16 +196,35 @@ function OrderDetails() {
                 </h1>
 
 
-                <div className="order-status" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', background: '#f5f3ef', borderRadius: '8px', marginBottom: '24px', border: '1px solid rgba(197, 160, 89, 0.3)' }}>
-                    <div>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.12em', color: '#c5a059', textTransform: 'uppercase', display: 'block' }}>Fulfillment &amp; Dispatch Status</span>
-                        <strong style={{ fontSize: '1.2rem', textTransform: 'uppercase', color: '#1a1a1a' }}>
-                            {order.status}
-                        </strong>
+                {/* Interactive Luxury Order Tracker */}
+                <div className="order-tracker-card" style={{ background: '#121212', color: '#f5f3ef', borderRadius: '12px', padding: '24px', marginBottom: '28px', border: '1px solid rgba(197, 160, 89, 0.3)', boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+                        <div>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.15em', color: '#c5a059', textTransform: 'uppercase' }}>Live Consignment Tracker</span>
+                            <h3 style={{ margin: '4px 0 0 0', fontSize: '1.25rem', color: '#ffffff' }}>Tracking Order: #{order.order_number}</h3>
+                        </div>
+                        <span style={{ background: order.status === 'Delivered' || order.status === 'Completed' ? '#2e7d32' : (order.status === 'Shipped' ? '#1565c0' : (order.status === 'Processing' ? '#e65100' : '#c5a059')), color: '#fff', fontSize: '0.75rem', fontWeight: 800, padding: '6px 16px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            {order.status || 'Pending'}
+                        </span>
                     </div>
-                    <span style={{ background: order.status === 'Delivered' ? '#2e7d32' : (order.status === 'Shipped' ? '#1565c0' : (order.status === 'Processing' ? '#e65100' : '#757575')), color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '6px 14px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                        {order.status}
-                    </span>
+
+                    {/* Timeline Steps */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '16px', position: 'relative', marginTop: '16px' }}>
+                        {[
+                            { label: 'Order Confirmed', step: 1, desc: 'Logged in Maison records', active: true },
+                            { label: 'Atelier Processing', step: 2, desc: 'Quality inspection & prep', active: ['Processing', 'Shipped', 'Delivered', 'Completed'].includes(order.status) },
+                            { label: 'Dispatched / In Transit', step: 3, desc: 'White-glove courier', active: ['Shipped', 'Delivered', 'Completed'].includes(order.status) },
+                            { label: 'Delivered & Complete', step: 4, desc: 'Safely received', active: ['Delivered', 'Completed'].includes(order.status) }
+                        ].map((s, idx) => (
+                            <div key={idx} style={{ textAlign: 'center', padding: '12px 8px', borderRadius: '8px', background: s.active ? 'rgba(197, 160, 89, 0.15)' : 'rgba(255,255,255,0.03)', border: s.active ? '1px solid #c5a059' : '1px solid rgba(255,255,255,0.08)' }}>
+                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: s.active ? '#c5a059' : '#333', color: s.active ? '#121212' : '#888', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px auto', fontSize: '0.85rem' }}>
+                                    {s.active ? '✓' : s.step}
+                                </div>
+                                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: s.active ? '#ffffff' : '#777', marginBottom: '2px' }}>{s.label}</div>
+                                <div style={{ fontSize: '0.68rem', color: s.active ? '#c5a059' : '#555' }}>{s.desc}</div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {order.admin_note && (
