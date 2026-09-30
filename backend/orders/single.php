@@ -2,15 +2,16 @@
 
 require_once "../helpers/cors.php";
 require_once "../helpers/response.php";
-require_once "../helpers/auth.php";
 require_once "../config/database.php";
+require_once "../helpers/auth.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     response(false, "Only GET requests are allowed", null, 405);
 }
 
 $userId = requireLogin();
-$isAdmin = isset($_SESSION["role"]) && $_SESSION["role"] === "admin";
+$authUser = getAuthUser();
+$isAdmin = $authUser && ($authUser['role'] ?? '') === 'admin';
 
 $orderId = isset($_GET["id"]) ? (int) $_GET["id"] : 0;
 
