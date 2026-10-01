@@ -17,6 +17,9 @@ namespace DeGraceAdmin
                 loginWindow.Show();
                 Close();
             };
+
+            // Refresh all data once window is fully loaded (token is set by then)
+            Loaded += async (_, _) => await mainVm.RefreshAllDataAsync();
         }
     }
 }

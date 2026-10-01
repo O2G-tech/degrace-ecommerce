@@ -120,5 +120,22 @@ namespace DeGraceAdmin.ViewModels
                 _ => DashboardVM
             };
         }
+
+        /// <summary>
+        /// Refreshes all data across every section. Called after login so the
+        /// auth token is already set before any API calls are made.
+        /// </summary>
+        public async Task RefreshAllDataAsync()
+        {
+            await Task.WhenAll(
+                DashboardVM.LoadStatsAsync(),
+                ProductsVM.LoadProductsAsync(),
+                ProductsVM.LoadCategoriesAsync(),
+                OrdersVM.LoadOrdersAsync(),
+                CategoriesVM.LoadCategoriesAsync(),
+                CustomersVM.LoadCustomersAsync(),
+                ReviewsVM.LoadReviewsAsync()
+            );
+        }
     }
 }
